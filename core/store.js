@@ -31,7 +31,20 @@ export async function readExistingIds(experimentName) {
   return ids;
 }
 
+// Concurrent runExperiment jobs (core/runner.js now fires up to the limiter's
+// concurrency ceiling at once) can all resolve around the same time. Node's
+// fs.appendFile is not guaranteed atomic across concurrent calls on every
+// platform, so two writes landing together could interleave into one
+// corrupted line. A single in-process queue serializes them; cheap, since
+// this all happens within one Node process.
+let writeQueue = Promise.resolve();
+
 export async function appendRecord(experimentName, record) {
-  await fs.mkdir(RAW_DIR, { recursive: true });
-  await fs.appendFile(rawPath(experimentName), `${JSON.stringify(record)}\n`, "utf8");
+  const line = `${JSON.stringify(record)}\n`;
+  const file = rawPath(experimentName);
+  writeQueue = writeQueue.then(async () => {
+    await fs.mkdir(RAW_DIR, { recursive: true });
+    await fs.appendFile(file, line, "utf8");
+  });
+  await writeQueue;
 }

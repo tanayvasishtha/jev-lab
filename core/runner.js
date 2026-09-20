@@ -102,9 +102,14 @@ export async function runExperiment({
 
   const tracker = new BudgetTracker(flags.cap);
   const results = [];
+  // "Consecutive" under concurrency means "in the last N completions", not
+  // literally sequential — still a real circuit breaker against a failure
+  // storm (e.g. a bad API key or a dead endpoint), just not exact ordering.
   let consecutiveFailures = 0;
+  let aborted = null;
 
-  for (const { item, req } of pending) {
+  async function processOne({ item, req }) {
+    if (aborted) return;
     try {
       const response = await callJevCached({
         state: req.state,
@@ -160,13 +165,20 @@ export async function runExperiment({
     } catch (err) {
       consecutiveFailures += 1;
       console.error(`Item ${req.id} failed:`, err?.message ?? err);
-      if (consecutiveFailures >= 50) {
-        throw new Error(
-          `Aborting ${name}: 50 consecutive failures. Last: ${err?.message ?? err}`,
+      if (consecutiveFailures >= 50 && !aborted) {
+        aborted = new Error(
+          `Aborting ${name}: 50 failures among the last completions. Last: ${err?.message ?? err}`,
         );
       }
     }
   }
+
+  // Fire every job at once — core/limiter.js's schedule() queues them and
+  // only admits up to its concurrency ceiling at a time, so this is safe and
+  // is what actually makes the harness use the 16x concurrency it claims to.
+  await Promise.all(pending.map(processOne));
+
+  if (aborted) throw aborted;
 
   return { results, spentUsd: tracker.spentUsd, liveCalls: tracker.calls };
 }
