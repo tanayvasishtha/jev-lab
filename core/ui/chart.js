@@ -10,13 +10,15 @@ export function svgEl(tag, attrs = {}, children = []) {
 }
 
 export function svgRoot(width = 1200, height = 675, extra = {}) {
-  return svgEl("svg", {
+  const svg = svgEl("svg", {
     viewBox: `0 0 ${width} ${height}`,
-    width: "100%",
-    height: "auto",
     role: "img",
     ...extra,
   });
+  svg.style.width = "100%";
+  svg.style.height = "auto";
+  svg.style.display = "block";
+  return svg;
 }
 
 /** Linear scale: maps [domainLo, domainHi] -> [rangeLo, rangeHi]. */
