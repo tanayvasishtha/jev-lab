@@ -1,4 +1,4 @@
-/* Shared tokens — DESIGN.md fills these in Phase 3. */
+/* Shared tokens and page skeleton. See DESIGN.md for the reasoning behind each choice. */
 :root {
   --bg: #f7f4ef;
   --ink: #1a1a1a;
@@ -6,6 +6,7 @@
   --measure: #0b6e4f;
   --reference: #8a8a8a;
   --attention: #b00020;
+  --rule: #1a1a1a1f;
   --font-display: "Source Serif 4", Georgia, serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --font-body: "Source Sans 3", Helvetica, Arial, sans-serif;
@@ -15,4 +16,100 @@
   --space-4: 1.5rem;
   --space-5: 2.5rem;
   --measure-max: 40rem;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.page {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-3) var(--space-5);
+}
+
+.finding {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 1.1rem + 2vw, 2.4rem);
+  line-height: 1.25;
+  max-width: var(--measure-max);
+  margin: 0 0 var(--space-4);
+}
+
+.finding .figure {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--measure);
+}
+
+.hero-chart, .secondary-chart {
+  margin: var(--space-4) 0;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: var(--space-3);
+  background: #fffdfa;
+}
+
+.chart-caption {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-top: var(--space-2);
+  max-width: var(--measure-max);
+}
+
+.meaning {
+  max-width: var(--measure-max);
+  font-size: 1.05rem;
+  margin: var(--space-4) 0;
+}
+
+.method-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  margin: var(--space-3) 0 var(--space-5);
+}
+.method-table th, .method-table td {
+  text-align: left;
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.method-table th { color: var(--muted); font-weight: 500; }
+
+.series-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--rule);
+  font-size: 0.95rem;
+}
+.series-nav a { color: var(--ink); }
+.series-nav a.current { color: var(--muted); pointer-events: none; text-decoration: none; }
+
+.raw-link { font-size: 0.9rem; }
+.raw-link a { color: var(--measure); }
+
+h1.kicker {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 0 0 var(--space-2);
+}
+
+@media (max-width: 640px) {
+  html, body { font-size: 16px; }
+  .page { padding: var(--space-4) var(--space-2); }
 }
