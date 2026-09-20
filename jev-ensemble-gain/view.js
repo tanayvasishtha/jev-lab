@@ -78,11 +78,21 @@ async function main() {
     `Mean-probability ensembling accuracy at each size, averaged over ${results.trialsPerSize} resampled trials per size. ` +
     `The red dot marks where accuracy comes within 1 point of the size-100 ceiling.`;
 
+  const ece1 = results.perSize[1].ece;
+  const ece100 = results.perSize[100].ece;
+  const eceImproved = ece100 < ece1 - 0.002;
+  const eceWorsened = ece100 > ece1 + 0.002;
+
   const meaning = document.getElementById("meaning");
   meaning.textContent =
     gain >= 0.02
       ? `Since Jev's output tokens are free, this gain is nearly free too — only the input tokens for the extra calls cost anything. If accuracy matters more than latency for your use case, asking ${results.saturationSize} times and averaging is a cheap upgrade over asking once.`
-      : `The accuracy was already close to its ceiling at a single call, so ensembling mostly buys calibration and confidence stability here, not raw correctness. Worth checking your own task before assuming ensembling will move the needle.`;
+      : `Accuracy was already near its ceiling at a single call (${fmtPct(acc1)}), and it stays essentially flat all the way to 100 variants — this lines up with the calibration audit's finding that Jev is already well-calibrated single-shot, leaving little for ensembling to correct. ` +
+        (eceWorsened
+          ? `Calibration (ECE) doesn't improve either: it actually drifts from ${ece1.toFixed(3)} at size 1 to ${ece100.toFixed(3)} at size 100. On this task, ensembling buys neither accuracy nor calibration — the extra cost isn't worth it.`
+          : eceImproved
+            ? `Calibration does improve with ensembling, from an ECE of ${ece1.toFixed(3)} at size 1 to ${ece100.toFixed(3)} at size 100, even though raw accuracy doesn't move.`
+            : `Calibration (ECE) is flat too, ${ece1.toFixed(3)} at size 1 versus ${ece100.toFixed(3)} at size 100 — on this task, ensembling doesn't clearly buy anything worth its extra cost.`);
 
   const rows = [
     ["Items", results.items],
