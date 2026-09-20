@@ -16,6 +16,22 @@ npx skills add typesafe-ai/skills --skill typesafe-ai
 Skill source, readable directly:
 `https://raw.githubusercontent.com/typesafe-ai/skills/main/skills/typesafe-ai/SKILL.md`
 
+### 0.1b Install the anti-slop design skill (required before any UI work)
+
+The pages are the thing people will see and share. They must not look like generated UI.
+
+```bash
+npx skills add https://github.com/prathameshagrawal/design-anti-slop --skill design-anti-slop
+```
+This skill supports Codex directly. It has two modes, and **both are mandatory**:
+- **Pre-generation:** run it before writing a single line of a page. It asks clarifying questions about direction. Answer them from section 5.1 of this plan.
+- **Post-generation:** run it as an audit on each finished page, then fix what it flags before that page's commit.
+
+It checks 25 patterns across three layers: visual (V1 to V9), structural (S1 to S9), conceptual (C1 to C7). For this project the ones most likely to bite are **S9 decorative data visualizations**, **S8 four-KPI card rows**, **V2 weak typography**, **V3 gradient text**, and **C1 hollow headlines**.
+
+Second reference, read once and keep open while building pages:
+`https://github.com/claudiusararu/unslop-ui-skill` — its `TELLS.md` is a catalog of roughly 100 specific AI design tells with the fix for each.
+
 ### 0.2 Anti-hallucination rules (these are hard rules)
 
 1. **Never invent an SDK method, option or response field.** The verified surface is in section 1. Anything outside it must be confirmed against the installed skill or the package's own type definitions in `node_modules/@typesafe-ai/sdk` before use.
@@ -72,8 +88,9 @@ jev-lab/
   package.json              type: module, workspaces not needed, one flat package
   .env.example              TYPESAFE_API_KEY=
   .gitignore                node_modules/, .env, data/cache/, data/datasets/
-  README.md                 the hub, written last, in phase 7
+  README.md                 the hub, written last, in phase 8
   PLAN.md                   this file
+  DESIGN.md                 the visual identity and why each choice was made, written in phase 2
 
   core/
     client.js               SDK wrapper, retries, model pinning
@@ -259,21 +276,38 @@ Each one follows the same protocol: preregister, smoke, build page, ask, full ru
 
 ## 5. Design specification for the pages
 
-Four distinct pages. Shared tokens only, so they read as a series without looking like the same page four times.
+Four distinct pages. They must read as a series, and none of them may look like generated UI.
 
-### 5.1 Tokens (`core/ui/lab.css`)
-```
---bg: #07070c;  --panel: #0d0d16;  --line: #ffffff14;
---text: #eaeaf2;  --dim: #9494a8;
---accent: #2ef2c4;   /* measured values */
---ref: #6b6b80;      /* reference lines, baselines, perfect calibration */
---warn: #ff8a3b;     /* gaps, drops, anything the reader should notice */
-```
-- Fonts: `Space Grotesk` (500/700) for text, `JetBrains Mono` (400/600) for every number. Google Fonts.
-- Spacing scale: 4, 8, 12, 16, 24, 32, 48, 64.
-- Dark only. No theme toggle.
+### 5.1 Direction brief (answer the anti-slop skill's pre-generation questions with this)
 
-### 5.2 Page structure (same skeleton, different content and charts)
+**What this is:** a published measurement. The closest reference points are a lab notebook, an instrument readout, and a good statistics paper's figure. FiveThirtyEight and the Our World in Data article pages are the right neighbourhood.
+
+**What this is not:** a SaaS product page, a marketing landing page, or an analytics dashboard. There are no feature cards, no KPI tiles, no hero gradient, no call to action.
+
+**The feeling:** someone measured something carefully and is showing you the evidence. Confident, plain, and dense with real information. The data is the decoration.
+
+**Required reading order on every page:** the finding, then the evidence for it, then how it was measured. Anyone who reads only the first line should come away with the correct conclusion.
+
+### 5.2 Choose the visual identity deliberately
+
+Do not reach for the default dark developer-tool palette. Run the anti-slop skill's pre-generation mode, then pick and write down, in `DESIGN.md`:
+- a type pairing chosen for this purpose, with a one-line reason (a serif or a grotesque with real character for headings, and a monospace for figures, since every important value here is a number)
+- a palette built from one measured-data colour, one reference-line colour, and one attention colour, on a background chosen deliberately. Light is allowed and may be the better choice for charts.
+- a spacing scale and a maximum text measure
+
+**Banned outright** (these are the tells that make work look generated):
+- purple-to-blue or any multi-stop gradient, gradient-filled text
+- Inter, Geist, or the system font stack as a headline face
+- glassmorphism, decorative blurred blobs, uniform 12px rounded corners on everything
+- three-across icon cards, KPI tile rows, pill-shaped eyebrow labels above headings
+- emoji as iconography
+- drop shadows used for depth where a one-pixel rule would do
+- charts that decorate rather than inform: donut charts, 3D anything, gratuitous animation on load
+- centred body text, and body text below 16px
+
+`DESIGN.md` is committed before the first page is built, and every choice in it has a stated reason. If a choice cannot be justified in one sentence, it is the wrong choice.
+
+### 5.3 Page structure (same skeleton, different content and charts)
 1. **Finding**, 32 to 40px, one sentence, containing the actual number from `results.json`.
 2. **Hero chart**, the one from section 4, at least 560px tall on desktop.
 3. **What this means**, two or three sentences, plain language, no hedging and no overclaiming.
@@ -281,24 +315,27 @@ Four distinct pages. Shared tokens only, so they read as a series without lookin
 5. **Secondary chart** where the experiment has one.
 6. **Footer**: links to the other three experiments, so each page feeds the series.
 
-### 5.3 Chart rules
+### 5.4 Chart rules
 - Inline SVG only, drawn by `core/ui/chart.js`. No charting library, no CDN scripts.
 - Direct labels on the data. No legends.
 - Axis labels always include units. Confidence intervals drawn as bands, never error bars alone.
 - **Every chart must be readable as a 1200x675 screenshot**, which is what X renders. Build at that ratio and check it.
 - Sample size printed on or beside every chart.
-- Colors carry meaning: `--accent` measured, `--ref` reference, `--warn` the gap. Nothing decorative.
+- Colors carry meaning and only meaning: measured data, reference line, and the thing worth noticing each get exactly one colour, as defined in `DESIGN.md`. Nothing decorative.
+- The chart is the hero. If a page would still make its point with the chart deleted, the chart is not doing its job.
 
-### 5.4 Responsiveness
+### 5.5 Responsiveness
 - Works from 380px to 2560px, no horizontal scroll.
 - Charts reflow using viewBox, they do not squash.
 
-### 5.5 Quality bar
+### 5.6 Quality bar
 Before a page is called done:
 - It renders correctly from a smoke-sized `results.json` and from the full one.
 - No console errors.
 - Every number on the page traces to a field in `results.json`. No hardcoded numbers anywhere in the HTML.
 - Screenshot at 1200x675 is legible on a phone.
+- **The anti-slop skill has been run in post-generation mode and everything it flagged is either fixed or justified in one sentence in `DESIGN.md`.**
+- Nothing on the banned list in 5.2 appears anywhere on the page.
 
 ---
 
@@ -311,7 +348,7 @@ Commit and push after each phase. Stop and report at each checkpoint.
 | 0 | Skeleton: package.json, .gitignore, .env.example, folders, README stub | `npm i` works, `.env` untracked, `git status` clean |
 | 1 | `core/` complete, including `stats.js` unit tests | `npm run smoke` passes all four assertions in 2.8, second run reports $0.00 |
 | 2 | `jev-calibration-audit`: preregister (own commit), then `--limit 50` run, analyze | `results.json` has every field in 3.7, numbers are finite and sane |
-| 3 | `jev-calibration-audit/index.html` built against the 50-item results | Meets every bullet in 5.5 |
+| 3 | `DESIGN.md` (anti-slop pre-generation run first), then `jev-calibration-audit/index.html` built against the 50-item results | Meets every bullet in 5.6, anti-slop post-generation audit clean |
 | 4 | **Checkpoint.** Print the full-run estimate, ask, run 15,942, re-analyze, re-render | Page shows full-run numbers, raw JSONL committed |
 | 5 | `jev-bundle-bias` end to end, same smoke-then-ask-then-full pattern | Flip rate and position effects reported separately, McNemar included |
 | 6 | `jev-label-bias` end to end | Per-scheme accuracy, adversarial case highlighted, worked example on the page |
