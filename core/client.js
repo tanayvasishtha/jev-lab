@@ -24,7 +24,16 @@ const MAX_ATTEMPTS = 5;
 const BACKOFF_INITIAL_MS = 500;
 const BACKOFF_MAX_MS = 30_000;
 
-const client = new TypeSafeClient({ defaultModel: MODEL_ID });
+// Lazy singleton: constructed on first real call, not at module import time.
+// Entry scripts call dotenv's config() in their own top-level body, but ESM
+// hoists imports, so a module-level `new TypeSafeClient()` here would run
+// before that config() call and fail with "no API key" even when .env is
+// correct. Deferring construction until callJev() actually runs avoids that.
+let client;
+function getClient() {
+  if (!client) client = new TypeSafeClient({ defaultModel: MODEL_ID });
+  return client;
+}
 
 function requestHash({ state, questions, model }) {
   return createHash("sha256")
@@ -61,7 +70,7 @@ export async function callJev({ state, questions, model = MODEL_ID } = {}) {
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
     const t0 = performance.now();
     try {
-      const response = await client.systemOne({ state, questions, model });
+      const response = await getClient().systemOne({ state, questions, model });
       return {
         model: response.model,
         answers: response.answers,
