@@ -148,10 +148,16 @@ async function main() {
     `<span class="figure">${fmtPct(results.accuracy)}</span> of the time overall.`;
 
   mount(document.getElementById("hero-chart"), reliabilityChart(results));
+  const nonEmptyBins = results.reliability.filter((b) => b.count > 0);
+  const minBinCount = Math.min(...nonEmptyBins.map((b) => b.count));
+  const sparseWarning =
+    minBinCount <= 3
+      ? ` At n=${results.n}, some bins hold only ${minBinCount === 1 ? "1 question" : `${minBinCount} questions`}, so read those individual dots cautiously.`
+      : "";
   document.getElementById("hero-caption").textContent =
     `Reliability diagram, ${results.bins} bins, n=${results.n}. Each dot is one confidence bin, sized by how many questions fell in it; ` +
     `the dashed segment shows its distance from the perfectly-calibrated diagonal, coloured red past a 0.2 gap. ` +
-    `Bars along the bottom are per-bin counts. At n=${results.n}, many bins hold only 1–2 questions, so read individual dots cautiously — the full run resolves this.`;
+    `Bars along the bottom are per-bin counts.${sparseWarning}`;
 
   mount(document.getElementById("secondary-chart"), latencyEntropyChart(results));
   document.getElementById("secondary-caption").textContent =
