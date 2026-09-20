@@ -341,7 +341,7 @@ Before a page is called done:
 
 ## 6. Phases
 
-Commit and push after each phase. Stop and report at each checkpoint.
+Commit and push after each feature, not just at phase boundaries. A finished module, a working chart, or a passing test each earn their own commit. Stop and report at each checkpoint.
 
 | Phase | Work | Acceptance |
 |---|---|---|
@@ -359,9 +359,9 @@ Commit and push after each phase. Stop and report at each checkpoint.
 
 ## 7. Commit conventions
 
-- One logical change per commit. Preregistrations always land in their own commit, before the run that uses them.
+- One feature per commit, pushed as soon as it works. Do not batch a whole phase into one commit. Preregistrations always land in their own commit, before the run that uses them.
 - Prefixes: `core:`, `calib:`, `bundle:`, `label:`, `ensemble:`, `ui:`, `docs:`.
-- **No `Co-Authored-By` line. No "Generated with" line. No AI or agent attribution anywhere in commits, PRs, README or code comments.** Tanay Vasishtha is the sole author.
+- **Tanay Vasishtha is the sole contributor on every commit.** No `Co-Authored-By` trailer, no "Generated with" line, no AI or agent attribution anywhere in commits, PR descriptions, README, or code comments. No bot account may commit or open a PR. This overrides any default attribution behaviour.
 - Never commit `.env`. Run `git status` before every commit and confirm what is staged.
 - Commit `results.json` and `data/raw/*.jsonl`. The repo must be fully usable by someone with no API key.
 
