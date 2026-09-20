@@ -140,6 +140,12 @@ export async function runExperiment({
             ? answerEntry.score
             : (answerEntry?.choice ?? null);
 
+      // Base record shape every experiment gets. Anything else an experiment
+      // attached to its request (e.g. bundle-bias's targetKey/targetPosition,
+      // label-bias's scheme, ensemble-gain's templateIndex) is preserved
+      // below instead of silently dropped — each analyze.js relies on its
+      // own such fields being there.
+      const KNOWN_REQ_FIELDS = new Set(["id", "condition", "state", "questions"]);
       const record = {
         id: req.id,
         condition: req.condition ?? null,
@@ -158,6 +164,9 @@ export async function runExperiment({
         usage: response.usage,
         timestamp: response.timestamp ?? new Date().toISOString(),
       };
+      for (const key of Object.keys(req)) {
+        if (!KNOWN_REQ_FIELDS.has(key)) record[key] = req[key];
+      }
       await appendRecord(name, record);
       results.push(record);
       consecutiveFailures = 0;
