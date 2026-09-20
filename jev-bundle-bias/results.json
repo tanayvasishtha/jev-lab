@@ -1,0 +1,62 @@
+{
+  "totalCalls": 8000,
+  "cacheHits": 2030,
+  "estimatedCost": 0.48923960400000005,
+  "model": "jev-1.13.0",
+  "seed": 42,
+  "startedAt": "2026-09-20T14:06:12.942Z",
+  "finishedAt": "2026-09-20T14:45:34.359Z",
+  "experiment": "jev-bundle-bias",
+  "targets": 2000,
+  "completeTargets": 2000,
+  "pairedComparisons": 6000,
+  "flipRate": 0.036333333333333336,
+  "flipRateCI95": [
+    0.03166666666666667,
+    0.04133333333333333
+  ],
+  "meanAbsShift": 0.04110833333333314,
+  "meanAbsShiftCI95": [
+    0.03929333333333305,
+    0.04300999999999985
+  ],
+  "mcnemar": {
+    "b": 99,
+    "c": 119,
+    "pValue": 0.17640787441003525
+  },
+  "positionBreakdown": {
+    "early": {
+      "n": 1805,
+      "flipRate": 0.03822714681440443,
+      "meanShift": 0.04345706371191155
+    },
+    "mid": {
+      "n": 2444,
+      "flipRate": 0.032324058919803604,
+      "meanShift": 0.03998772504091689
+    },
+    "late": {
+      "n": 1751,
+      "flipRate": 0.03997715591090805,
+      "meanShift": 0.04025128498001151
+    }
+  },
+  "compositionBreakdown": {
+    "1": {
+      "n": 2000,
+      "flipRate": 0.0365,
+      "meanShift": 0.04058000000000026
+    },
+    "2": {
+      "n": 2000,
+      "flipRate": 0.036,
+      "meanShift": 0.04107000000000021
+    },
+    "3": {
+      "n": 2000,
+      "flipRate": 0.0365,
+      "meanShift": 0.041675000000000184
+    }
+  }
+}
