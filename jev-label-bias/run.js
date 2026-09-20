@@ -85,13 +85,19 @@ function buildTicket(index) {
   };
 }
 
-/** Given a ticket and a scheme's key-per-slot assignment, build the choice() criteria map. */
+/** Given a ticket and a scheme's key-per-slot assignment, build the choice()
+ * criteria map, plus the key->category map so analyze.js can compare choices
+ * across schemes by what they MEAN, not by their (always-different) key
+ * strings. */
 function buildCriteria(ticket, keyForSlot) {
   const criteria = {};
+  const keyToCategory = {};
   ticket.slotOrder.forEach((category, slot) => {
-    criteria[keyForSlot(slot, category)] = CATEGORIES[category].criteria;
+    const key = keyForSlot(slot, category);
+    criteria[key] = CATEGORIES[category].criteria;
+    keyToCategory[key] = category;
   });
-  return criteria;
+  return { criteria, keyToCategory };
 }
 
 function correctKey(ticket, keyForSlot) {
@@ -126,12 +132,13 @@ function buildRequestsForTicket(ticket) {
   const requests = [];
   for (const [schemeName, scheme] of Object.entries(SCHEMES)) {
     const keyForSlot = (slot, category) => scheme.keyForSlot(slot, category, ticket);
-    const criteria = buildCriteria(ticket, keyForSlot);
+    const { criteria, keyToCategory } = buildCriteria(ticket, keyForSlot);
     requests.push({
       id: `${ticket.id}__${schemeName}`,
       condition: schemeName,
       scheme: schemeName,
       correctKeyInThisScheme: correctKey(ticket, keyForSlot),
+      keyToCategory,
       state: ticket.state,
       questions: { route: choice("Which team should handle this support ticket?", criteria) },
     });
