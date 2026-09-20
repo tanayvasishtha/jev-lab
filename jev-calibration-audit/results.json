@@ -1,1 +1,247 @@
-PLACEHOLDER
+{
+  "totalCalls": 50,
+  "cacheHits": 0,
+  "estimatedCost": 0.0008768340000000001,
+  "model": "jev-1.13.0",
+  "seed": 42,
+  "startedAt": "2026-09-20T13:41:37.799Z",
+  "finishedAt": "2026-09-20T13:41:46.720Z",
+  "experiment": "jev-calibration-audit",
+  "n": 50,
+  "liveCalls": 50,
+  "bins": 20,
+  "ece": 0.09819999999999994,
+  "eceCI95": [
+    0.06320000000000014,
+    0.14660000000000004
+  ],
+  "brier": 0.03627799999999999,
+  "brierCI95": [
+    0.011832000000000007,
+    0.069746
+  ],
+  "accuracy": 0.98,
+  "accuracyCI95": [
+    0.94,
+    1
+  ],
+  "reliability": [
+    {
+      "bin": 0,
+      "lo": 0,
+      "hi": 0.05,
+      "count": 7,
+      "meanProb": 0.021428571428571432,
+      "accuracy": 0
+    },
+    {
+      "bin": 1,
+      "lo": 0.05,
+      "hi": 0.1,
+      "count": 3,
+      "meanProb": 0.06,
+      "accuracy": 0
+    },
+    {
+      "bin": 2,
+      "lo": 0.1,
+      "hi": 0.15,
+      "count": 1,
+      "meanProb": 0.12,
+      "accuracy": 0
+    },
+    {
+      "bin": 3,
+      "lo": 0.15,
+      "hi": 0.2,
+      "count": 2,
+      "meanProb": 0.16,
+      "accuracy": 0.5
+    },
+    {
+      "bin": 4,
+      "lo": 0.2,
+      "hi": 0.25,
+      "count": 0,
+      "meanProb": null,
+      "accuracy": null
+    },
+    {
+      "bin": 5,
+      "lo": 0.25,
+      "hi": 0.3,
+      "count": 0,
+      "meanProb": null,
+      "accuracy": null
+    },
+    {
+      "bin": 6,
+      "lo": 0.3,
+      "hi": 0.35,
+      "count": 0,
+      "meanProb": null,
+      "accuracy": null
+    },
+    {
+      "bin": 7,
+      "lo": 0.35,
+      "hi": 0.4,
+      "count": 0,
+      "meanProb": null,
+      "accuracy": null
+    },
+    {
+      "bin": 8,
+      "lo": 0.4,
+      "hi": 0.45,
+      "count": 1,
+      "meanProb": 0.44,
+      "accuracy": 0
+    },
+    {
+      "bin": 9,
+      "lo": 0.45,
+      "hi": 0.5,
+      "count": 2,
+      "meanProb": 0.475,
+      "accuracy": 0
+    },
+    {
+      "bin": 10,
+      "lo": 0.5,
+      "hi": 0.55,
+      "count": 0,
+      "meanProb": null,
+      "accuracy": null
+    },
+    {
+      "bin": 11,
+      "lo": 0.55,
+      "hi": 0.6,
+      "count": 0,
+      "meanProb": null,
+      "accuracy": null
+    },
+    {
+      "bin": 12,
+      "lo": 0.6,
+      "hi": 0.65,
+      "count": 1,
+      "meanProb": 0.62,
+      "accuracy": 1
+    },
+    {
+      "bin": 13,
+      "lo": 0.65,
+      "hi": 0.7,
+      "count": 0,
+      "meanProb": null,
+      "accuracy": null
+    },
+    {
+      "bin": 14,
+      "lo": 0.7,
+      "hi": 0.75,
+      "count": 1,
+      "meanProb": 0.7,
+      "accuracy": 1
+    },
+    {
+      "bin": 15,
+      "lo": 0.75,
+      "hi": 0.8,
+      "count": 1,
+      "meanProb": 0.75,
+      "accuracy": 1
+    },
+    {
+      "bin": 16,
+      "lo": 0.8,
+      "hi": 0.85,
+      "count": 2,
+      "meanProb": 0.83,
+      "accuracy": 1
+    },
+    {
+      "bin": 17,
+      "lo": 0.85,
+      "hi": 0.9,
+      "count": 2,
+      "meanProb": 0.865,
+      "accuracy": 1
+    },
+    {
+      "bin": 18,
+      "lo": 0.9,
+      "hi": 0.95,
+      "count": 2,
+      "meanProb": 0.93,
+      "accuracy": 1
+    },
+    {
+      "bin": 19,
+      "lo": 0.95,
+      "hi": 1,
+      "count": 25,
+      "meanProb": 0.9716000000000001,
+      "accuracy": 1
+    }
+  ],
+  "latencyVsEntropy": {
+    "n": 50,
+    "meanLatencyMs": 184.14,
+    "meanEntropy": 0.23736647120644425,
+    "points": [
+      {"latencyMs": 371, "entropy": 0.098039113279732},
+      {"latencyMs": 146, "entropy": 0.05600153435484737},
+      {"latencyMs": 174, "entropy": 0.09803911327973205},
+      {"latencyMs": 131, "entropy": 0.2787693717685874},
+      {"latencyMs": 176, "entropy": 0.13474216817976675},
+      {"latencyMs": 191, "entropy": 0.19851524334587267},
+      {"latencyMs": 219, "entropy": 0.13474216817976684},
+      {"latencyMs": 142, "entropy": 0.19851524334587267},
+      {"latencyMs": 185, "entropy": 0.1985152433458726},
+      {"latencyMs": 157, "entropy": 0.167944147734173},
+      {"latencyMs": 196, "entropy": 0.2536389469216913},
+      {"latencyMs": 189, "entropy": 0.098039113279732},
+      {"latencyMs": 206, "entropy": 0.09803911327973205},
+      {"latencyMs": 246, "entropy": 0.6859298002523728},
+      {"latencyMs": 178, "entropy": 0.098039113279732},
+      {"latencyMs": 133, "entropy": 0.6108643020548935},
+      {"latencyMs": 153, "entropy": 0.19851524334587267},
+      {"latencyMs": 148, "entropy": 0.056001534354847345},
+      {"latencyMs": 157, "entropy": 0.19851524334587267},
+      {"latencyMs": 152, "entropy": 0.09803911327973205},
+      {"latencyMs": 246, "entropy": 0.13474216817976684},
+      {"latencyMs": 264, "entropy": 0.05600153435484737},
+      {"latencyMs": 169, "entropy": 0.42270908780599087},
+      {"latencyMs": 133, "entropy": 0.3669249912727096},
+      {"latencyMs": 174, "entropy": 0.056001534354847345},
+      {"latencyMs": 151, "entropy": 0.2536389469216913},
+      {"latencyMs": 127, "entropy": 0.4558862130273584},
+      {"latencyMs": 186, "entropy": 0.19851524334587267},
+      {"latencyMs": 152, "entropy": 0.19851524334587267},
+      {"latencyMs": 132, "entropy": 0.4227090878059909},
+      {"latencyMs": 176, "entropy": 0.13474216817976684},
+      {"latencyMs": 147, "entropy": 0.05600153435484737},
+      {"latencyMs": 268, "entropy": 0.05600153435484737},
+      {"latencyMs": 177, "entropy": 0.47139348681009424},
+      {"latencyMs": 129, "entropy": 0.6899437584583995},
+      {"latencyMs": 223, "entropy": 0.5623351446188083},
+      {"latencyMs": 194, "entropy": 0.09803911327973205},
+      {"latencyMs": 235, "entropy": 0.439669879401343},
+      {"latencyMs": 158, "entropy": 0.05600153435484737},
+      {"latencyMs": 148, "entropy": 0.09803911327973205},
+      {"latencyMs": 230, "entropy": 0.1985152433458726},
+      {"latencyMs": 236, "entropy": 0.6640641265641081},
+      {"latencyMs": 181, "entropy": 0.16794414773417304},
+      {"latencyMs": 194, "entropy": 0.09803911327973205},
+      {"latencyMs": 138, "entropy": 0.09803911327973205},
+      {"latencyMs": 190, "entropy": 0.09803911327973205},
+      {"latencyMs": 299, "entropy": 0.3669249912727096},
+      {"latencyMs": 197, "entropy": 0.19851524334587267},
+      {"latencyMs": 139, "entropy": 0.09803911327973205},
+      {"latencyMs": 164, "entropy": 0.6929471672244782}
+    ]
+  }
+}
