@@ -1,0 +1,58 @@
+{
+  "totalCalls": 4000,
+  "cacheHits": 344,
+  "estimatedCost": 0.063737688,
+  "model": "jev-1.13.0",
+  "seed": 42,
+  "startedAt": "2026-09-20T14:48:40.404Z",
+  "finishedAt": "2026-09-20T14:54:39.940Z",
+  "experiment": "jev-label-bias",
+  "tickets": 1000,
+  "completeTickets": 1000,
+  "accuracyByScheme": {
+    "neutral": 1,
+    "descriptive": 1,
+    "loaded": 1,
+    "adversarial": 1
+  },
+  "shiftVsNeutralByScheme": {
+    "descriptive": 0,
+    "loaded": 0,
+    "adversarial": 0
+  },
+  "mcnemarVsNeutral": {
+    "descriptive": {
+      "b": 0,
+      "c": 0,
+      "pValue": 1
+    },
+    "loaded": {
+      "b": 0,
+      "c": 0,
+      "pValue": 1
+    },
+    "adversarial": {
+      "b": 0,
+      "c": 0,
+      "pValue": 1
+    }
+  },
+  "workedExample": {
+    "ticketId": "ticket-0",
+    "state": "Customer message: \"I'm getting an error message when I try to sync my Solace Chat account.\"",
+    "neutralCriteria": {
+      "option_a": "Handles pricing questions, plan upgrades, and new purchase inquiries.",
+      "option_b": "Handles bugs, error messages, crashes, and product malfunctions.",
+      "option_c": "Handles payment charges, refunds, invoices, and billing discrepancies."
+    },
+    "neutralChoice": "option_b",
+    "neutralCorrect": true,
+    "adversarialCriteria": {
+      "other": "Handles pricing questions, plan upgrades, and new purchase inquiries.",
+      "unlikely": "Handles bugs, error messages, crashes, and product malfunctions.",
+      "recommended": "Handles payment charges, refunds, invoices, and billing discrepancies."
+    },
+    "adversarialChoice": "unlikely",
+    "adversarialCorrect": true
+  }
+}
