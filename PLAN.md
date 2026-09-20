@@ -9,7 +9,7 @@ This document is the contract. Build exactly what it says. Where it says "verify
 ## 0. Before writing any code
 
 ### 0.1 Install the TypeSafe skill
-Run one of these, then follow the skill:
+Install it, or if your agent is not supported by the installer, read the raw SKILL.md directly:
 ```bash
 npx skills add typesafe-ai/skills --skill typesafe-ai
 ```
@@ -23,14 +23,19 @@ The pages are the thing people will see and share. They must not look like gener
 ```bash
 npx skills add https://github.com/prathameshagrawal/design-anti-slop --skill design-anti-slop
 ```
-This skill supports Codex directly. It has two modes, and **both are mandatory**:
+If your agent is not supported by that installer, read the files directly instead, they are plain markdown:
+- `https://raw.githubusercontent.com/prathameshagrawal/design-anti-slop/main/skills/design-anti-slop/SKILL.md`
+- `.../patterns/visual.md`, `.../patterns/structural.md`, `.../patterns/conceptual.md`
+- `.../workflows/pre-gen-brief.md`, `.../workflows/post-gen-audit.md`, `.../workflows/iterative-polish.md`
+
+It has two modes, and **both are mandatory**:
 - **Pre-generation:** run it before writing a single line of a page. It asks clarifying questions about direction. Answer them from section 5.1 of this plan.
 - **Post-generation:** run it as an audit on each finished page, then fix what it flags before that page's commit.
 
 It checks 25 patterns across three layers: visual (V1 to V9), structural (S1 to S9), conceptual (C1 to C7). For this project the ones most likely to bite are **S9 decorative data visualizations**, **S8 four-KPI card rows**, **V2 weak typography**, **V3 gradient text**, and **C1 hollow headlines**.
 
 Second reference, read once and keep open while building pages:
-`https://github.com/claudiusararu/unslop-ui-skill` — its `TELLS.md` is a catalog of roughly 100 specific AI design tells with the fix for each.
+`https://raw.githubusercontent.com/claudiusararu/unslop-ui-skill/main/TELLS.md` — a catalog of roughly 100 specific AI design tells with the fix for each.
 
 ### 0.2 Anti-hallucination rules (these are hard rules)
 
