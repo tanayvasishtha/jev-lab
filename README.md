@@ -37,9 +37,30 @@ npm i
 npm run race        # then open http://localhost:4100
 ```
 
-- **Racers:** Jev (hosted, TypeSafe API) and [Laya](https://huggingface.co/convaiinnovations/laya) (open source, Apache 2.0, runs on your CPU). The first run downloads Laya's weights, about 1.7GB.
-- **Recording mode:** `http://localhost:4100/?rec=1&n=25` hides the controls, starts on its own, and fits a 1920x1080 frame.
-- **Fairness:** Jev's time includes the network round trip to TypeSafe; Laya's is pure local inference, so its speed depends on your CPU. Laya runs in its own worker thread so its CPU work can't delay the timing of Jev's calls.
+- **Racers:**
+  - **Jev**, hosted, TypeSafe API
+  - **[Laya](https://huggingface.co/convaiinnovations/laya)**, open source (Apache 2.0), runs in-process via ONNX Runtime. The first run downloads its weights, about 1.7GB.
+  - **[Von](https://github.com/wfzyx/von)**, open source (Apache 2.0), runs as a local Python server. Optional; see setup below.
+- **Recording mode:** `http://localhost:4100/?rec=1&n=25&racers=jev,laya,von` hides the controls, waits until every named racer is ready, starts on its own, and fits a 1920x1080 frame.
+- **Fairness:** Jev's time includes the network round trip to TypeSafe; Laya and Von are pure local inference, so their speed depends on your CPU. Both local models race at the same moment, so each is given an equal half of the CPU threads. Laya runs in a worker thread and Von in its own process, so neither can delay the timing of Jev's calls.
+
+### Adding Von (one time)
+
+Von needs Python 3.12+ and PyTorch. This keeps it in an isolated, gitignored environment inside the repo:
+
+```bash
+uv venv .venv-von -p 3.12
+uv pip install --python .venv-von/Scripts/python.exe torch --index-url https://download.pytorch.org/whl/cpu
+uv pip install --python .venv-von/Scripts/python.exe von-sdk
+npm run von          # binds 127.0.0.1:8000; first start downloads ~1.5GB of weights
+```
+
+On macOS/Linux use `.venv-von/bin/python` instead of `.venv-von/Scripts/python.exe`.
+
+### Speed-up attempts that didn't work (on a Ryzen 5 5500U)
+
+- **DirectML (integrated Radeon GPU):** ONNX Runtime loads Laya but crashes on a Reshape node at inference.
+- **int8 quantization:** 4x smaller (1.7GB to 425MB) but only 1.15x faster, and accuracy dropped from 32/40 to 26/40. Zen 2 CPUs lack the VNNI instructions that make int8 fast. The script is kept at [`jev-race/quantize-laya.py`](jev-race/quantize-laya.py) for anyone re-measuring on newer hardware.
 - **Spend:** Jev calls are capped at $0.50 per server session by default (`RACE_JEV_CAP_USD` to change it). A 25-question race costs well under a cent.
 - **Adding a competitor:** one entry in [`core/providers.js`](core/providers.js).
 
