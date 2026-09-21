@@ -11,6 +11,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { config as loadEnv } from "dotenv";
+import { validQuestion } from "./shared.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 loadEnv({ path: path.join(ROOT, ".env") });
@@ -22,7 +23,7 @@ const { loadBoolQ, sample } = await import("../core/datasets.js");
 const PORT = Number(process.env.RACE_PORT) || 4100;
 const HOST = "127.0.0.1";
 // Hard cap on real Jev spend for the lifetime of this server process.
-const JEV_CAP_USD = Number(process.env.RACE_JEV_CAP_USD) || 0.5;
+const JEV_CAP_USD = process.env.RACE_JEV_CAP_USD !== undefined ? Number(process.env.RACE_JEV_CAP_USD) : 0.5;
 const MAX_STATE_CHARS = 6000;
 const MAX_QUESTIONS_PER_REQUEST = 100;
 
@@ -37,6 +38,7 @@ const STATIC = {
   "/race.css": ["jev-race/race.css", "text/css"],
   "/core/ui/lab.css": ["core/ui/lab.css", "text/css"],
   "/core/ui/chart.js": ["core/ui/chart.js", "text/javascript"],
+  "/shared.js": ["jev-race/shared.js", "text/javascript"],
 };
 
 let boolqCache = null;
@@ -59,15 +61,6 @@ async function readBody(req, limit = 64 * 1024) {
     chunks.push(chunk);
   }
   return JSON.parse(Buffer.concat(chunks).toString("utf8") || "{}");
-}
-
-function validQuestion(q) {
-  if (!q || typeof q.instructions !== "string" || !q.instructions.trim()) return false;
-  if (q.instructions.length > 1000) return false;
-  if (q.type === "noul") return true;
-  if (q.type === "choice") return q.criteria && typeof q.criteria === "object" && Object.keys(q.criteria).length >= 2;
-  if (q.type === "score") return Array.isArray(q.criteria) && q.criteria.length >= 2;
-  return false;
 }
 
 async function handleAsk(req, res) {

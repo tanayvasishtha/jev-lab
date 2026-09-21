@@ -8,7 +8,7 @@
   },
   "scripts": {
     "smoke": "node core/smoke.js",
-    "test": "node --test core/stats.test.js",
+    "test": "node --test core/stats.test.js jev-race/race.test.js",
     "race": "node jev-race/server.js",
     "von": "node jev-race/von.js"
   },
