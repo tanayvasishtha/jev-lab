@@ -2,7 +2,9 @@
 
 Four independent experiments stress-testing [TypeSafe's Jev](https://typesafe.ai), the "System One" model that returns typed, calibrated decisions instead of text. Every number on every page traces back to a committed raw response log; nothing here is illustrative.
 
-Model tested: `jev-1.13.0`. Full build spec: [PLAN.md](PLAN.md). Visual identity and reasoning: [DESIGN.md](DESIGN.md).
+**[Browse the results →](index.html)**
+
+Model tested: `jev-1.13.0`. Build spec: [PLAN.md](PLAN.md). Visual identity and reasoning: [DESIGN.md](DESIGN.md). License: [MIT](LICENSE).
 
 ## The four findings
 
@@ -44,6 +46,39 @@ Every experiment follows the same protocol, enforced by a shared harness (`core/
 2. **Collect once, cache always.** A content-addressed disk cache means a re-run of the same request costs nothing, so analysis can be iterated on safely.
 3. **Report honestly.** Confidence intervals on every headline number, raw JSONL committed alongside every result, null results reported as plainly as positive ones.
 4. **No calls from the browser.** Every page reads a committed `results.json`; you can read every finding here with zero API key.
+5. **Budget-capped by default.** Every collection run prints its estimated cost and asks for confirmation before spending, and a hard cap (default $5, overridable with `--cap`) aborts mid-run if crossed.
+
+## Project layout
+
+```
+jev-lab/
+  index.html              landing page linking to all four results
+  PLAN.md                 the build specification this repo follows
+  DESIGN.md               visual identity and the reasoning behind it
+  LICENSE                 MIT
+
+  core/                   shared harness, the only code that talks to the Jev API
+    client.js             SDK wrapper, retries, model pinning
+    limiter.js             concurrency + rate limiting, budget cap enforcement
+    cache.js               content-addressed disk cache
+    budget.js               cost estimation
+    datasets.js             BoolQ loader with a GCS-then-HuggingFace fallback
+    stats.js                 ECE, Brier, bootstrap CI, McNemar (unit tested)
+    store.js                  JSONL append + resume, safe under concurrency
+    runner.js                 ties it together, the only thing experiments import
+    devserver.js               local-only static file server for previewing pages
+    ui/                        shared chart primitives and page styling
+
+  jev-calibration-audit/   } each experiment folder has the same shape:
+  jev-bundle-bias/         }   PREREGISTER.md, run.js, analyze.js,
+  jev-label-bias/          }   results.json, index.html, view.js, README.md
+  jev-ensemble-gain/       }
+
+  data/
+    raw/                    committed JSONL logs, one per experiment
+    cache/                  gitignored, local response cache
+    datasets/               gitignored, downloaded BoolQ
+```
 
 ## Reproduce
 
@@ -52,6 +87,9 @@ npm i
 cp .env.example .env   # add your own TYPESAFE_API_KEY
 node jev-calibration-audit/run.js --limit 50 --yes   # small, cheap dev run
 node jev-calibration-audit/analyze.js
+node core/devserver.js                                # open localhost:4000
 ```
 
-Open any `index.html` directly, or serve the folder locally (`node core/devserver.js`).
+Every experiment folder's own `README.md` has its exact reproduce commands and cost. Full runs need no `--limit`, but each one prints its cost estimate and waits for confirmation before spending anything.
+
+Requires Node 20+. No build step, no framework: vanilla JS for both the collection scripts and the pages.
