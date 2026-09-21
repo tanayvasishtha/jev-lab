@@ -15,7 +15,9 @@ function shiftByPositionChart(raw) {
   const maxShift = Math.max(0.05, ...raw.map((r) => r.shift)) * 1.1;
   const y = scaleLinear([0, maxShift], [M.top + plotH, M.top]);
 
-  const svg = svgRoot(W, H);
+  const svg = svgRoot(W, H, {
+    label: `Scatter of ${raw.length} alone-versus-bundled comparisons by the target question's position in the bundle. Red dots crossed the decision boundary.`,
+  });
   svg.append(axis({ x1: M.left, y1: M.top + plotH, x2: M.left + plotW, y2: M.top + plotH }));
   svg.append(axis({ x1: M.left, y1: M.top, x2: M.left, y2: M.top + plotH }));
 
@@ -53,7 +55,9 @@ function compositionBarChart(breakdown) {
   const x = scaleLinear([0, entries.length], [M.left, M.left + plotW]);
   const y = scaleLinear([0, maxShift], [M.top + plotH, M.top]);
 
-  const svg = svgRoot(W, H);
+  const svg = svgRoot(W, H, {
+    label: `Bar chart of mean probability shift across ${entries.length} independent bundle compositions.`,
+  });
   svg.append(axis({ x1: M.left, y1: M.top + plotH, x2: M.left + plotW, y2: M.top + plotH }));
   svg.append(axis({ x1: M.left, y1: M.top, x2: M.left, y2: M.top + plotH }));
 

@@ -20,7 +20,9 @@ function accuracyCurve(results) {
   const x = scaleLinear([logSizes[0], logSizes[logSizes.length - 1]], [M.left, M.left + plotW]);
   const y = scaleLinear([lo, hi], [M.top + plotH, M.top]);
 
-  const svg = svgRoot(W, H);
+  const svg = svgRoot(W, H, {
+    label: `Line chart of mean-probability ensembling accuracy across ensemble sizes ${sizes.join(", ")}, saturating at size ${results.saturationSize}.`,
+  });
   svg.append(axis({ x1: M.left, y1: M.top + plotH, x2: M.left + plotW, y2: M.top + plotH }));
   svg.append(axis({ x1: M.left, y1: M.top, x2: M.left, y2: M.top + plotH }));
 

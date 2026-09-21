@@ -21,7 +21,9 @@ function slopegraph(accuracyByScheme) {
   const x = scaleLinear([0, SCHEME_ORDER.length - 1], [M.left, M.left + plotW]);
   const y = scaleLinear([0.5, 1], [M.top + plotH, M.top]);
 
-  const svg = svgRoot(W, H);
+  const svg = svgRoot(W, H, {
+    label: `Slopegraph of routing accuracy across the four label schemes: ${SCHEME_ORDER.map((s) => `${s} ${fmtPct(accuracyByScheme[s])}`).join(", ")}.`,
+  });
   svg.append(axis({ x1: M.left, y1: M.top + plotH, x2: M.left + plotW, y2: M.top + plotH }));
   for (const t of [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]) {
     svg.append(axis({ x1: M.left, y1: y(t), x2: M.left + plotW, y2: y(t), stroke: "var(--rule)", width: 1 }));

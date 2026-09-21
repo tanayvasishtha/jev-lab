@@ -22,7 +22,9 @@ function reliabilityChart(results) {
   const x = scaleLinear([0, 1], [M.left, M.left + plotW]);
   const y = scaleLinear([0, 1], [M.top + plotH, M.top]);
 
-  const svg = svgRoot(W, H);
+  const svg = svgRoot(W, H, {
+    label: `Reliability diagram across ${results.bins} confidence bins, n=${results.n}. Expected calibration error ${results.ece.toFixed(3)}.`,
+  });
 
   // faint count histogram along the bottom, one bar per bin
   const bins = results.reliability;
@@ -108,7 +110,9 @@ function latencyEntropyChart(results) {
   const x = scaleLinear([0, maxEntropy], [M.left, M.left + plotW]);
   const y = scaleLinear([0, maxLatency], [M.top + plotH, M.top]);
 
-  const svg = svgRoot(W, H);
+  const svg = svgRoot(W, H, {
+    label: `Scatter of latency against answer entropy across ${results.latencyVsEntropy.n} live calls, mean latency ${Math.round(results.latencyVsEntropy.meanLatencyMs)} milliseconds.`,
+  });
   svg.append(axis({ x1: M.left, y1: M.top + plotH, x2: M.left + plotW, y2: M.top + plotH }));
   svg.append(axis({ x1: M.left, y1: M.top, x2: M.left, y2: M.top + plotH }));
 

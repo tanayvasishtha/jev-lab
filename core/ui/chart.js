@@ -9,11 +9,20 @@ export function svgEl(tag, attrs = {}, children = []) {
   return el;
 }
 
+/**
+ * @param {number} width
+ * @param {number} height
+ * @param {{ label?: string }} [extra] - `label` sets an accessible name
+ *   (aria-label) for screen readers, since an inline SVG with role="img"
+ *   otherwise announces nothing. Pass the same text as the chart's caption.
+ */
 export function svgRoot(width = 1200, height = 675, extra = {}) {
+  const { label: ariaLabel, ...rest } = extra;
   const svg = svgEl("svg", {
     viewBox: `0 0 ${width} ${height}`,
     role: "img",
-    ...extra,
+    ...(ariaLabel ? { "aria-label": ariaLabel } : {}),
+    ...rest,
   });
   svg.style.width = "100%";
   svg.style.height = "auto";
