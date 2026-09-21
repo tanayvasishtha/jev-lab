@@ -24,6 +24,8 @@ export async function callJevCached({
   questions,
   model = MODEL_ID,
   noCache = false,
+  isAborted,
+  abortMessage,
 }) {
   const key = cacheKey({ state, questions, model });
   if (!noCache) {
@@ -34,7 +36,10 @@ export async function callJevCached({
   }
 
   try {
-    const result = await schedule(() => callJev({ state, questions, model }));
+    const result = await schedule(() => callJev({ state, questions, model }), {
+      isAborted,
+      abortMessage,
+    });
     const record = {
       model: result.model,
       answers: result.answers,
@@ -108,13 +113,22 @@ export async function runExperiment({
   let consecutiveFailures = 0;
   let aborted = null;
 
+  // Checked by the limiter right before it actually dispatches a queued job
+  // to the network — see the comment in limiter.js's pump() for why that's
+  // the only place this can bite before money is spent, not before.
+  const isAborted = () => aborted !== null || tracker.spentUsd >= tracker.capUsd;
+  const abortMessage = () =>
+    aborted?.message ?? `Budget cap reached ($${tracker.spentUsd.toFixed(4)} >= $${tracker.capUsd.toFixed(2)})`;
+
   async function processOne({ item, req }) {
-    if (aborted) return;
+    if (isAborted()) return;
     try {
       const response = await callJevCached({
         state: req.state,
         questions: req.questions,
         noCache: flags.noCache,
+        isAborted,
+        abortMessage,
       });
 
       if (!response.fromCache) {
@@ -172,9 +186,25 @@ export async function runExperiment({
       consecutiveFailures = 0;
       if (onResult) onResult(record, item);
     } catch (err) {
+      // Once anything has set `aborted`, or the budget cap has actually
+      // been reached, every remaining queued job the limiter rejects
+      // pre-dispatch lands here too — that's expected mass behaviour, not a
+      // fresh failure each time. Set `aborted` here on first detection (the
+      // budget cap has no other path that does this) and stay quiet after.
+      if (tracker.spentUsd >= tracker.capUsd) {
+        if (!aborted) {
+          aborted = new Error(
+            `Aborting ${name}: budget cap reached ($${tracker.spentUsd.toFixed(4)} >= $${tracker.capUsd.toFixed(2)}).`,
+          );
+          console.error(aborted.message);
+        }
+        return;
+      }
+      if (aborted) return;
+
       consecutiveFailures += 1;
       console.error(`Item ${req.id} failed:`, err?.message ?? err);
-      if (consecutiveFailures >= 50 && !aborted) {
+      if (consecutiveFailures >= 50) {
         aborted = new Error(
           `Aborting ${name}: 50 failures among the last completions. Last: ${err?.message ?? err}`,
         );

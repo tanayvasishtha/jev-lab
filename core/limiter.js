@@ -29,6 +29,19 @@ function pump() {
     timestamps.length < rpm
   ) {
     const job = queue.shift();
+    // Checked here, not at schedule()-time: a caller can fire thousands of
+    // jobs into the queue in one synchronous tick (that's the whole point of
+    // the concurrency fix), so by the time any of them has actually run and
+    // could flip an abort flag, every job would already be queued. This is
+    // the one place execution is genuinely staggered over real time — each
+    // job only reaches here once an earlier one finishes and frees a slot —
+    // so it's the only place a cap or circuit-breaker can actually bite
+    // before the network call happens, instead of after it already cost
+    // money.
+    if (job.isAborted && job.isAborted()) {
+      job.reject(new Error(job.abortMessage ? job.abortMessage() : "Aborted before dispatch"));
+      continue;
+    }
     active += 1;
     timestamps.push(Date.now());
     Promise.resolve()
@@ -55,9 +68,13 @@ export function notify429() {
   halvedUntil = Date.now() + 60_000;
 }
 
-export function schedule(fn) {
+/**
+ * @param {() => Promise<any>} fn
+ * @param {{ isAborted?: () => boolean, abortMessage?: () => string }} [opts]
+ */
+export function schedule(fn, opts = {}) {
   return new Promise((resolve, reject) => {
-    queue.push({ fn, resolve, reject });
+    queue.push({ fn, resolve, reject, isAborted: opts.isAborted, abortMessage: opts.abortMessage });
     pump();
   });
 }
