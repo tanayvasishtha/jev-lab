@@ -9,7 +9,8 @@
  *
  * Adding a competitor means adding one entry to PROVIDERS below.
  */
-import { Worker } from "node:worker_threads";
+import { fork } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import os from "node:os";
 import { callJev, MODEL_ID, noul, choice, score } from "./client.js";
 import { estimateCostUsd } from "./budget.js";
@@ -43,13 +44,16 @@ const jev = {
 };
 
 // ---------- Laya (open source, runs on this machine) ----------
-// Lives in a worker thread (see laya-worker.js) so its CPU work can't stall
-// the main event loop that's timing Jev's network calls.
-let layaWorker = null;
+// Runs in its own child process (see laya-worker.js): its CPU work can't
+// stall the event loop that times Jev's network calls, and a native crash
+// (e.g. under memory pressure) kills only Laya, not the race server.
+// A crashed Laya is restarted automatically after a short pause.
+let layaChild = null;
 let layaStatus = "loading";
 let layaError = null;
 let nextId = 0;
 const pendingLaya = new Map();
+const LAYA_RESTART_MS = 3000;
 
 // Half the CPU threads: Laya and Von are both local and race at the same
 // moment, so each gets an equal half of the machine (Von's launcher,
@@ -57,11 +61,18 @@ const pendingLaya = new Map();
 const LAYA_THREADS = Number(process.env.LAYA_THREADS) || Math.max(2, Math.floor(os.cpus().length / 2));
 
 function startLayaWorker() {
-  if (layaWorker) return;
-  layaWorker = new Worker(new URL("./laya-worker.js", import.meta.url), { workerData: { threads: LAYA_THREADS } });
-  layaWorker.on("message", (msg) => {
-    if (msg.type === "ready") layaStatus = "ready";
-    else if (msg.type === "failed") {
+  if (layaChild) return;
+  layaStatus = "loading";
+  const child = fork(fileURLToPath(new URL("./laya-worker.js", import.meta.url)), [], {
+    env: { ...process.env, LAYA_WORKER_THREADS: String(LAYA_THREADS) },
+    stdio: ["ignore", "inherit", "inherit", "ipc"],
+  });
+  layaChild = child;
+  child.on("message", (msg) => {
+    if (msg.type === "ready") {
+      layaStatus = "ready";
+      layaError = null;
+    } else if (msg.type === "failed") {
       layaStatus = "unavailable";
       layaError = msg.error;
     } else {
@@ -72,13 +83,28 @@ function startLayaWorker() {
       else pending.resolve(msg);
     }
   });
-  layaWorker.on("error", (err) => {
+  child.on("exit", (code, signal) => {
+    if (layaChild !== child) return;
+    layaChild = null;
+    const wasFailedLoad = layaStatus === "unavailable" && layaError;
     layaStatus = "unavailable";
-    layaError = err?.message ?? String(err);
-    for (const p of pendingLaya.values()) p.reject(new Error(`Laya worker crashed: ${layaError}`));
+    layaError = layaError ?? `Laya process exited (code ${code ?? signal})`;
+    for (const p of pendingLaya.values()) p.reject(new Error(`Laya crashed mid-answer (exit ${code ?? signal}); restarting it`));
     pendingLaya.clear();
+    // A failed model load won't fix itself; a crash (often memory pressure)
+    // usually will, so bring it back.
+    if (!wasFailedLoad && !shuttingDown) {
+      console.error(`Laya process exited (code ${code ?? signal}); restarting in ${LAYA_RESTART_MS / 1000}s`);
+      setTimeout(startLayaWorker, LAYA_RESTART_MS).unref();
+    }
   });
 }
+
+let shuttingDown = false;
+process.on("exit", () => {
+  shuttingDown = true;
+  layaChild?.kill();
+});
 
 const laya = {
   id: "laya",
@@ -95,7 +121,7 @@ const laya = {
     const id = ++nextId;
     const msg = await new Promise((resolve, reject) => {
       pendingLaya.set(id, { resolve, reject });
-      layaWorker.postMessage({ type: "ask", id, state, question });
+      layaChild.send({ type: "ask", id, state, question });
     });
     return {
       model: "convaiinnovations/laya",
@@ -189,7 +215,12 @@ const von = {
   },
 };
 
-export const PROVIDERS = { jev, laya, von };
+// RACE_PROVIDERS=jev,laya limits who's in the race (and what gets loaded).
+// Used by the tests so they never load the local models.
+const ENABLED = process.env.RACE_PROVIDERS?.split(",").map((s) => s.trim()).filter(Boolean);
+export const PROVIDERS = Object.fromEntries(
+  Object.entries({ jev, laya, von }).filter(([id]) => !ENABLED || ENABLED.includes(id)),
+);
 
 export function listProviders() {
   return Object.values(PROVIDERS).map((p) => ({
