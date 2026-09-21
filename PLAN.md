@@ -35,7 +35,7 @@ It has two modes, and **both are mandatory**:
 It checks 25 patterns across three layers: visual (V1 to V9), structural (S1 to S9), conceptual (C1 to C7). For this project the ones most likely to bite are **S9 decorative data visualizations**, **S8 four-KPI card rows**, **V2 weak typography**, **V3 gradient text**, and **C1 hollow headlines**.
 
 Second reference, read once and keep open while building pages:
-`https://raw.githubusercontent.com/claudiusararu/unslop-ui-skill/main/TELLS.md` — a catalog of roughly 100 specific AI design tells with the fix for each.
+`https://raw.githubusercontent.com/claudiusararu/unslop-ui-skill/main/TELLS.md`, a catalog of roughly 100 specific AI design tells with the fix for each.
 
 ### 0.2 Anti-hallucination rules (these are hard rules)
 

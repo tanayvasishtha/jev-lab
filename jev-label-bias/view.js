@@ -79,17 +79,17 @@ async function main() {
 
   mount(document.getElementById("hero-chart"), slopegraph(results.accuracyByScheme));
   document.getElementById("hero-caption").textContent =
-    `Routing accuracy across the four label schemes, same ${results.completeTickets} tickets and identical criteria text in every scheme — only the option key names change.`;
+    `Routing accuracy across the four label schemes, same ${results.completeTickets} tickets and identical criteria text in every scheme, only the option key names change.`;
 
   const meaning = document.getElementById("meaning");
   const ceilingCaveat =
     neutralAcc >= 0.999
-      ? ` One honest caveat: neutral accuracy is already ${fmtPct(neutralAcc)} — these synthetic tickets may simply be unambiguous enough that no labeling scheme could move the answer. This result rules out a large effect on easy decisions; it doesn't rule out an effect on genuinely close calls.`
+      ? ` One honest caveat: neutral accuracy is already ${fmtPct(neutralAcc)}, these synthetic tickets may simply be unambiguous enough that no labeling scheme could move the answer. This result rules out a large effect on easy decisions; it doesn't rule out an effect on genuinely close calls.`
       : "";
   meaning.textContent =
     (drop > 0.01
       ? `This is a real, actionable risk: the words you choose for your enum keys can outweigh the facts you give Jev. If your key names carry any judgment ("recommended", "risky", "urgent"), that framing may be doing more work than you think.`
-      : `Jev appears to be reading the criteria descriptions, not the key names — a misleading key like "unlikely" attached to the objectively correct option didn't derail it here. That's reassuring for anyone naming enum keys by convention rather than by neutral placeholder.`) +
+      : `Jev appears to be reading the criteria descriptions, not the key names, a misleading key like "unlikely" attached to the objectively correct option didn't derail it here. That's reassuring for anyone naming enum keys by convention rather than by neutral placeholder.`) +
     ceilingCaveat;
 
   const wx = results.workedExample;

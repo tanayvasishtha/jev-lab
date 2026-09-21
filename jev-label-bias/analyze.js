@@ -55,7 +55,7 @@ async function main() {
     if (!byTicket.has(tId)) byTicket.set(tId, {});
     byTicket.get(tId)[rec.scheme] = {
       chosen: rec.answers.route.choice,
-      // Compare by the underlying category, not the raw key string — every
+      // Compare by the underlying category, not the raw key string, every
       // scheme uses a different key vocabulary by design (option_b vs
       // billing vs unlikely), so raw key equality across schemes is
       // meaningless and would make "did the choice shift" trivially always

@@ -1,5 +1,5 @@
 /**
- * Harness self-test — 50 BoolQ items, four assertions (PLAN §2.8).
+ * Harness self-test, 50 BoolQ items, four assertions (PLAN §2.8).
  * Usage: npm run smoke
  */
 import { config as loadEnv } from "dotenv";

@@ -9,7 +9,7 @@ Since Jev's output tokens are free, asking the same question many different ways
 ## Dataset and sampling
 
 - **BoolQ**, same loader as `jev-calibration-audit`.
-- `sample(all, 500, seed=42)` — 500 items. Disjoint from `jev-calibration-audit`'s run only in the sense that it's an independent seeded draw over the same pool; overlap with the full calibration sample is expected and is a free cache hit for the `variant 0` (unmodified) case only, since every other variant changes the phrasing.
+- `sample(all, 500, seed=42)`, 500 items. Disjoint from `jev-calibration-audit`'s run only in the sense that it's an independent seeded draw over the same pool; overlap with the full calibration sample is expected and is a free cache hit for the `variant 0` (unmodified) case only, since every other variant changes the phrasing.
 
 ## Variants (100 per item, 50,000 calls total)
 
@@ -21,10 +21,10 @@ Each item is asked 100 different ways, generated deterministically from a per-it
   3. `Based on the passage, is this correct? {q}`
   4. `Does the passage support this claim? {q}`
   5. `Evaluate: {q}. Is it true?`
-  6. `{q} — true or false, based on the text above?`
+  6. `{q}, true or false, based on the text above?`
   7. `Fact-check this against the passage: {q}`
   8. `Is it accurate to say that {q}`
-  9. `According to the passage, {q} — true?`
+  9. `According to the passage, {q}, true?`
   10. `Verify: {q}`
 - **Option order**: for the `choice` variants (see below), option key order is shuffled per call; for `noul` variants there is no order to shuffle.
 - Each of the 10 templates is used as a `noul` question 5 times (5 independent calls, identical content, to measure pure sampling variance) = 50 calls, and as a `choice` question (`true`/`false` keys, order shuffled) 5 times = 50 calls. 100 calls per item total.
@@ -49,7 +49,7 @@ For ensemble sizes **1, 2, 5, 10, 25, 50, 100** (subsets drawn without replaceme
 ## Decision rule
 
 - Support the hypothesis if mean-probability ensembling at any size ≤ 25 beats single-shot accuracy by ≥ 2 percentage points.
-- Report the saturation point and its cost regardless of outcome — that number is the practical takeaway either way.
+- Report the saturation point and its cost regardless of outcome; that number is the practical takeaway either way.
 
 ## Out of scope for this experiment
 

@@ -14,7 +14,7 @@ import {
 } from "./budget.js";
 import { appendRecord, readExistingIds } from "./store.js";
 
-// RateLimitError is not exported from client — detect via message/status.
+// RateLimitError is not exported from client, detect via message/status.
 import { RateLimitError as SDKRateLimitError } from "@typesafe-ai/sdk";
 
 export { MODEL_ID, noul, choice, score, parseArgs };
@@ -108,13 +108,13 @@ export async function runExperiment({
   const tracker = new BudgetTracker(flags.cap);
   const results = [];
   // "Consecutive" under concurrency means "in the last N completions", not
-  // literally sequential — still a real circuit breaker against a failure
+  // literally sequential, still a real circuit breaker against a failure
   // storm (e.g. a bad API key or a dead endpoint), just not exact ordering.
   let consecutiveFailures = 0;
   let aborted = null;
 
   // Checked by the limiter right before it actually dispatches a queued job
-  // to the network — see the comment in limiter.js's pump() for why that's
+  // to the network, see the comment in limiter.js's pump() for why that's
   // the only place this can bite before money is spent, not before.
   const isAborted = () => aborted !== null || tracker.spentUsd >= tracker.capUsd;
   const abortMessage = () =>
@@ -157,7 +157,7 @@ export async function runExperiment({
       // Base record shape every experiment gets. Anything else an experiment
       // attached to its request (e.g. bundle-bias's targetKey/targetPosition,
       // label-bias's scheme, ensemble-gain's templateIndex) is preserved
-      // below instead of silently dropped — each analyze.js relies on its
+      // below instead of silently dropped, each analyze.js relies on its
       // own such fields being there.
       const KNOWN_REQ_FIELDS = new Set(["id", "condition", "state", "questions"]);
       const record = {
@@ -188,7 +188,7 @@ export async function runExperiment({
     } catch (err) {
       // Once anything has set `aborted`, or the budget cap has actually
       // been reached, every remaining queued job the limiter rejects
-      // pre-dispatch lands here too — that's expected mass behaviour, not a
+      // pre-dispatch lands here too; that's expected mass behaviour, not a
       // fresh failure each time. Set `aborted` here on first detection (the
       // budget cap has no other path that does this) and stay quiet after.
       if (tracker.spentUsd >= tracker.capUsd) {
@@ -212,7 +212,7 @@ export async function runExperiment({
     }
   }
 
-  // Fire every job at once — core/limiter.js's schedule() queues them and
+  // Fire every job at once, core/limiter.js's schedule() queues them and
   // only admits up to its concurrency ceiling at a time, so this is safe and
   // is what actually makes the harness use the 16x concurrency it claims to.
   await Promise.all(pending.map(processOne));

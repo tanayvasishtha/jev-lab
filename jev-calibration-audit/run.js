@@ -18,7 +18,7 @@ loadEnv({ path: path.join(ROOT, ".env") });
 
 const EXPERIMENT = "jev-calibration-audit";
 
-/** Frozen in PREREGISTER.md — do not rephrase. */
+/** Frozen in PREREGISTER.md, do not rephrase. */
 function buildAnswerQuestion(question) {
   return noul(`Is the following statement true? ${question}`);
 }

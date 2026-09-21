@@ -11,7 +11,7 @@ Renaming a `choice` question's option keys, while holding the underlying criteri
 1,000 synthetic support-ticket routing decisions, built from a fixed template so the correct answer is known by construction, not scored against an external dataset:
 
 - A `state` string describing one ticket, generated from a small fixed set of templates (billing / technical / sales scenarios) combined with seeded random details (amounts, product names, urgency words) so the 1,000 items are distinct but structurally uniform.
-- Three routing options per ticket, described by fixed criteria text that never changes across schemes (only the option **keys** change — see below). One option is correct by construction (it's the category the template was generated from).
+- Three routing options per ticket, described by fixed criteria text that never changes across schemes (only the option **keys** change, see below). One option is correct by construction (it's the category the template was generated from).
 
 Generation is seeded (`42`) and deterministic; the generator lives in `run.js` and is not a separate dataset dependency.
 
@@ -19,12 +19,12 @@ Generation is seeded (`42`) and deterministic; the generator lives in `run.js` a
 
 For a ticket whose correct category is, say, "billing":
 
-1. **neutral** — keys `option_a`, `option_b`, `option_c`.
-2. **descriptive** — keys `billing`, `technical`, `sales` (the key names match what they mean).
-3. **loaded** — keys `recommended` (assigned to the *correct* option), `unusual`, `risky` (assigned to the two incorrect options).
-4. **adversarial** — keys `unlikely` (assigned to the *correct* option) and `recommended` (assigned to one *incorrect* option), third option `other`.
+1. **neutral**, keys `option_a`, `option_b`, `option_c`.
+2. **descriptive**, keys `billing`, `technical`, `sales` (the key names match what they mean).
+3. **loaded**, keys `recommended` (assigned to the *correct* option), `unusual`, `risky` (assigned to the two incorrect options).
+4. **adversarial**, keys `unlikely` (assigned to the *correct* option) and `recommended` (assigned to one *incorrect* option), third option `other`.
 
-The `criteria` description text passed to `choice()` is identical across all 4 schemes for a given ticket — only the key names differ. This isolates the key name itself as the only variable.
+The `criteria` description text passed to `choice()` is identical across all 4 schemes for a given ticket, only the key names differ. This isolates the key name itself as the only variable.
 
 Total: 1,000 × 4 = 4,000 calls.
 
@@ -47,7 +47,7 @@ Total: 1,000 × 4 = 4,000 calls.
 ## Decision rule
 
 - Support the hypothesis if accuracy is statistically indistinguishable (McNemar p > 0.05) across all four schemes.
-- Reject if the adversarial scheme's accuracy is significantly lower than neutral's — that is the specific, actionable finding this experiment is designed to catch.
+- Reject if the adversarial scheme's accuracy is significantly lower than neutral's, that is the specific, actionable finding this experiment is designed to catch.
 
 ## Out of scope for this experiment
 

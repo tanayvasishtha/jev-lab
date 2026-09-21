@@ -9,18 +9,18 @@ Bundling a BoolQ question into one Jev call together with 9 unrelated BoolQ ques
 ## Dataset and sampling
 
 - **BoolQ**, same loader as `jev-calibration-audit` (`core/datasets.js`).
-- Target sample: `sample(all, 2000, seed=42)` — 2,000 target items.
+- Target sample: `sample(all, 2000, seed=42)`, 2,000 target items.
 - Filler items for bundling: drawn from the same pool, excluded from being their own filler, via a seeded RNG derived from the target's index (`seed = 42 + targetIndex`) so filler draws are deterministic and reproducible without a second global seed.
 
 ## Conditions (4 calls per target item, 8,000 calls total)
 
-1. **alone** — one call, one question, identical phrasing to `jev-calibration-audit` so an overlapping item is a free cache hit:
+1. **alone**, one call, one question, identical phrasing to `jev-calibration-audit` so an overlapping item is a free cache hit:
    ```js
    noul(`Is the following statement true? ${question}`)
    ```
    `state`: the target's passage only.
 
-2–4. **bundled** (3 independent compositions) — one call, 10 questions (the target plus 9 filler items freshly drawn per composition), the target inserted at a **randomly chosen position** (0–9) within that call's `questions` object, position recorded. Each filler question uses the same frozen phrasing above, keyed to its own filler id. `state`: all 10 items' passages, concatenated with a clear separator and each one labeled by its question key so Jev can tell which passage supports which question:
+2–4. **bundled** (3 independent compositions), one call, 10 questions (the target plus 9 filler items freshly drawn per composition), the target inserted at a **randomly chosen position** (0–9) within that call's `questions` object, position recorded. Each filler question uses the same frozen phrasing above, keyed to its own filler id. `state`: all 10 items' passages, concatenated with a clear separator and each one labeled by its question key so Jev can tell which passage supports which question:
    ```
    [q0] <passage 0>
    [q1] <passage 1>

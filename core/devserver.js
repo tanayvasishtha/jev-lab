@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PORT = process.env.PORT || 4000;
-const HOST = "127.0.0.1"; // never bind all interfaces — this tree includes .env
+const HOST = "127.0.0.1"; // never bind all interfaces; this tree includes .env
 
 const TYPES = {
   ".html": "text/html",
@@ -19,7 +19,7 @@ const TYPES = {
 };
 
 // Anything matching these is refused outright, regardless of path traversal
-// checks below — this is a static file server for a repo that keeps its own
+// checks below; this is a static file server for a repo that keeps its own
 // secrets (.env) and git history (.git) right next to the pages it serves.
 const DENY_SEGMENTS = [".env", ".git", "node_modules"];
 

@@ -15,7 +15,7 @@ const EXPERIMENT = "jev-bundle-bias";
 const N_FILLERS = 9;
 const N_COMPOSITIONS = 3;
 
-/** Frozen in PREREGISTER.md — do not rephrase. Identical to calibration-audit's
+/** Frozen in PREREGISTER.md, do not rephrase. Identical to calibration-audit's
  * phrasing on purpose, so an overlapping item is a free cache hit. */
 function questionFor(item) {
   return noul(`Is the following statement true? ${item.question}`);

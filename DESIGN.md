@@ -1,7 +1,7 @@
 # Visual identity
 
 This is a published measurement, not a product. The closest references are a lab
-notebook, an instrument readout, and a statistics paper's figure — FiveThirtyEight
+notebook, an instrument readout, and a statistics paper's figure, FiveThirtyEight
 and Our World in Data article pages are the right neighbourhood. It is not a SaaS
 landing page or an analytics dashboard: no feature cards, no KPI tiles, no hero
 gradient, no call to action. The chart is the hero on every page; if a page still
@@ -19,8 +19,8 @@ Anyone who reads only the first line should come away with the correct conclusio
 - **Numbers: IBM Plex Mono.** Every measured value is set in monospace so digits
   align in tables and don't jitter as they update.
 
-Explicitly avoided: Inter, Geist, and the system font stack as a headline face —
-these are the single most common AI-generated-design tell.
+Explicitly avoided: Inter, Geist, and the system font stack as a headline face.
+These are the single most common AI-generated-design tell.
 
 ## Colour
 

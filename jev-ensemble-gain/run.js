@@ -15,17 +15,17 @@ const EXPERIMENT = "jev-ensemble-gain";
 const N_ITEMS = 500;
 const REPEATS = 5;
 
-/** Frozen in PREREGISTER.md — do not edit or reorder after data collection starts. */
+/** Frozen in PREREGISTER.md, do not edit or reorder after data collection starts. */
 const TEMPLATES = [
   (q) => `Is the following statement true? ${q}`,
   (q) => `True or false: ${q}`,
   (q) => `Based on the passage, is this correct? ${q}`,
   (q) => `Does the passage support this claim? ${q}`,
   (q) => `Evaluate: ${q}. Is it true?`,
-  (q) => `${q} — true or false, based on the text above?`,
+  (q) => `${q}, true or false, based on the text above?`,
   (q) => `Fact-check this against the passage: ${q}`,
   (q) => `Is it accurate to say that ${q}`,
-  (q) => `According to the passage, ${q} — true?`,
+  (q) => `According to the passage, ${q}, true?`,
   (q) => `Verify: ${q}`,
 ];
 

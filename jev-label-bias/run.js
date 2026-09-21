@@ -19,7 +19,7 @@ const CATEGORIES = {
     templates: [
       "I was charged {amount} twice for my {product} subscription this month.",
       "My invoice shows {amount} but I was quoted a different price for {product}.",
-      "I need a refund of {amount} for {product} — it was billed in error.",
+      "I need a refund of {amount} for {product}, it was billed in error.",
     ],
   },
   technical: {
@@ -33,7 +33,7 @@ const CATEGORIES = {
   sales: {
     criteria: "Handles pricing questions, plan upgrades, and new purchase inquiries.",
     templates: [
-      "I want to upgrade my {product} plan — what are the pricing tiers?",
+      "I want to upgrade my {product} plan, what are the pricing tiers?",
       "Can you tell me if {product} offers a discount for annual billing?",
       "I'm interested in buying {product} for my team, what are the options?",
     ],
