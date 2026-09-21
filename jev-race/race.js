@@ -1,6 +1,6 @@
 import { svgRoot, scaleLinear, axis, label, linePath, dot, mount } from "/core/ui/chart.js";
 
-const COLORS = { jev: "var(--measure)", laya: "var(--series-2)" };
+const COLORS = { jev: "var(--measure)", laya: "var(--series-2)", von: "var(--series-3)" };
 const FALLBACK_COLORS = ["var(--series-3)", "var(--attention)", "var(--ink)"];
 // Same frozen phrasing as the calibration audit, so results stay comparable.
 const instructionFor = (statement) => `Is the following statement true? ${statement}`;
@@ -28,6 +28,8 @@ let scaleMs = 1000;
 
 let providers = [];
 const selected = new Set();
+const touched = new Set(); // racers the viewer toggled by hand
+const lastStatus = {};
 const stats = {}; // id -> { answered, correct, graded, latencies[], first, cost }
 const history = []; // [{ index, results: { id: latencyMs } }]
 let running = false;
@@ -55,25 +57,44 @@ async function loadProviders() {
   for (const p of providers) {
     if (!stats[p.id]) stats[p.id] = { answered: 0, correct: 0, graded: 0, latencies: [], first: 0, cost: 0 };
     const wanted = REC_RACERS ? REC_RACERS.includes(p.id) : true;
-    if (firstLoad && wanted && p.status !== "unavailable") selected.add(p.id);
+    const wasOffline = lastStatus[p.id] === undefined || lastStatus[p.id] === "unavailable";
+    // Auto-join a racer that comes online later (e.g. `npm run von` started
+    // after this page), unless the viewer has already toggled it themselves.
+    if (wanted && !touched.has(p.id) && p.status !== "unavailable" && (firstLoad || wasOffline)) selected.add(p.id);
     if (p.status === "unavailable") selected.delete(p.id);
+    lastStatus[p.id] = p.status;
   }
   if (!running) renderRacers();
   renderScoreboard();
   const stillLoading = providers.some((p) => selected.has(p.id) && p.status === "loading");
-  if (providers.some((p) => p.status === "loading")) setTimeout(loadProviders, 1500);
+  // Keep polling so racers that start or stop later show up; cheap, local.
+  setTimeout(loadProviders, stillLoading ? 1500 : 3000);
   syncButtons();
 
-  if (REC && !autoStarted && !stillLoading && readyRacers().length) {
-    autoStarted = true;
-    els.count.value = String(REC_COUNT);
-    startRace(REC_COUNT);
+  if (REC && !autoStarted) {
+    // With ?racers=... named explicitly, wait for every one of them, so a
+    // recording never starts with a racer missing because it was still
+    // booting. Without it, start with whoever is ready.
+    const missing = REC_RACERS
+      ? REC_RACERS.filter((id) => providers.find((p) => p.id === id)?.status !== "ready")
+      : [];
+    if (missing.length) {
+      els.stage.hidden = false;
+      els.stageMeta.textContent = `Waiting for ${missing.map((id) => providers.find((p) => p.id === id)?.name ?? id).join(", ")} to be ready…`;
+    } else if (!stillLoading && readyRacers().length) {
+      autoStarted = true;
+      els.count.value = String(REC_COUNT);
+      startRace(REC_COUNT);
+    }
   }
 }
 
 function statusText(p) {
   if (p.status === "loading") return "loading model…";
-  if (p.status === "unavailable") return p.kind === "hosted" ? "no API key" : "failed to load";
+  if (p.status === "unavailable") {
+    if (p.kind === "hosted") return "no API key";
+    return p.id === "von" ? "not running (npm run von)" : "failed to load";
+  }
   return p.kind === "hosted" ? "hosted · network" : "local · CPU";
 }
 
@@ -89,6 +110,7 @@ function renderRacers() {
     input.checked = selected.has(p.id);
     input.disabled = p.status === "unavailable" || running;
     input.addEventListener("change", () => {
+      touched.add(p.id);
       if (input.checked) selected.add(p.id);
       else selected.delete(p.id);
       renderedLineup = providers.filter((x) => selected.has(x.id)).map((x) => x.id).join(",");
@@ -371,8 +393,8 @@ function renderChart() {
 
   // Wider, shorter shape in recording mode so it fits the 1080p frame at a
   // readable size instead of being scaled down.
-  const W = 1200, H = REC ? 190 : 420;
-  const M = REC ? { top: 14, right: 150, bottom: 30, left: 70 } : { top: 24, right: 110, bottom: 50, left: 70 };
+  const W = 1200, H = REC ? 150 : 420;
+  const M = REC ? { top: 12, right: 150, bottom: 24, left: 70 } : { top: 24, right: 110, bottom: 50, left: 70 };
   const plotW = W - M.left - M.right;
   const plotH = H - M.top - M.bottom;
   const all = history.flatMap((h) => Object.values(h.results));
