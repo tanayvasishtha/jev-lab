@@ -7,3 +7,9 @@ data/raw/smoke*.jsonl
 # fetches this one live, it's a download link only, so it's safe to keep
 # the plain .jsonl local-only. analyze.js falls back to the .gz.
 data/raw/jev-ensemble-gain.jsonl
+
+# Python env for the local Von server (jev-race)
+.venv-von/
+
+# Locally built model variants (jev-race/quantize-laya.py)
+models/

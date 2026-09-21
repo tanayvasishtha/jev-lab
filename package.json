@@ -9,12 +9,14 @@
   "scripts": {
     "smoke": "node core/smoke.js",
     "test": "node --test core/stats.test.js",
-    "race": "node jev-race/server.js"
+    "race": "node jev-race/server.js",
+    "von": "node jev-race/von.js"
   },
   "dependencies": {
     "@receptron/laya": "^0.1.2",
     "@typesafe-ai/sdk": "^0.6.0",
     "dotenv": "^16.6.1",
-    "hyparquet": "^1.31.1"
+    "hyparquet": "^1.31.1",
+    "von-sdk": "^1.0.1"
   }
 }

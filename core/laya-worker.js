@@ -6,19 +6,20 @@
  * noticing that a Jev network response has arrived, which would otherwise
  * inflate Jev's measured latency during a side-by-side race.
  */
-import { parentPort } from "node:worker_threads";
-import os from "node:os";
+import { parentPort, workerData } from "node:worker_threads";
 import { Laya } from "@receptron/laya";
 
-// Physical cores, roughly: measured fastest-per-core on a 12-thread Ryzen,
-// and it leaves headroom for the browser and a screen recorder.
-const THREADS = Number(process.env.LAYA_THREADS) || Math.max(2, Math.floor(os.cpus().length / 2));
+// Thread count and which bundle to load come from core/providers.js, so
+// several Laya variants (stock, int8) can run side by side with a fixed,
+// equal share of the CPU each.
+const THREADS = workerData?.threads ?? 4;
+const MODEL_DIR = workerData?.modelDir; // undefined = stock bundle from Hugging Face
 const WARMUP_STATE = "The warm-up passage says the sky is blue on a clear day.";
 const WARMUP_QUESTION = { answer: { type: "noul", instructions: "Is the following statement true? the sky is blue" } };
 
 let laya;
 try {
-  laya = await Laya.load({ sessionOptions: { intraOpNumThreads: THREADS } });
+  laya = await Laya.load({ ...(MODEL_DIR ? { modelDir: MODEL_DIR } : {}), sessionOptions: { intraOpNumThreads: THREADS } });
   // The first inference is noticeably slower than steady state; pay that
   // cost here so question 1 of a race isn't penalised for it.
   await laya.systemOne(WARMUP_STATE, WARMUP_QUESTION);
