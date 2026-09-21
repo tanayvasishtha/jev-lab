@@ -5,11 +5,15 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { gunzip } from "node:zlib";
+import { promisify } from "node:util";
 import { loadBoolQ } from "../core/datasets.js";
 import { rawPath } from "../core/store.js";
 import { ece } from "../core/stats.js";
 import { estimateCostUsd } from "../core/budget.js";
 import { MODEL_ID } from "../core/client.js";
+
+const gunzipAsync = promisify(gunzip);
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const EXPERIMENT = "jev-ensemble-gain";
@@ -22,8 +26,24 @@ async function readJsonl(file) {
   try {
     text = await fs.readFile(file, "utf8");
   } catch (err) {
-    if (err && err.code === "ENOENT") throw new Error(`Missing raw file ${file}. Run run.js first.`);
-    throw err;
+    if (err && err.code === "ENOENT") {
+      // This experiment's raw file is committed gzipped (56MB uncompressed,
+      // over GitHub's size warning; ~1.5MB gzipped) since, unlike
+      // bundle-bias, no page fetches it live in the browser; it's a
+      // download link only. A fresh clone won't have the plain .jsonl, so
+      // fall back to the .gz instead of failing.
+      try {
+        const gz = await fs.readFile(`${file}.gz`);
+        text = (await gunzipAsync(gz)).toString("utf8");
+      } catch (gzErr) {
+        if (gzErr && gzErr.code === "ENOENT") {
+          throw new Error(`Missing raw file ${file} (and ${file}.gz). Run run.js first.`);
+        }
+        throw gzErr;
+      }
+    } else {
+      throw err;
+    }
   }
   const rows = [];
   for (const line of text.split(/\n+/)) {

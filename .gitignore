@@ -3,3 +3,7 @@ node_modules/
 data/cache/
 data/datasets/
 data/raw/smoke*.jsonl
+# Committed gzipped instead (56MB uncompressed, ~1.5MB gzipped); no page
+# fetches this one live, it's a download link only, so it's safe to keep
+# the plain .jsonl local-only. analyze.js falls back to the .gz.
+data/raw/jev-ensemble-gain.jsonl
