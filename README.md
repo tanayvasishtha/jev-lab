@@ -28,6 +28,21 @@ Since Jev's output tokens are free, we asked 500 questions 100 different ways ea
 
 **Finding: no, not on this task.** Accuracy is flat at ~93.3–93.4% from a single call all the way to 100, and calibration doesn't improve either. This connects to finding #1: Jev is already well-calibrated single-shot, so there's little left for ensembling to correct.
 
+## Live: jev-race
+
+The four experiments above are recorded results. [`jev-race/`](jev-race/) is the live one: Jev and an open-source competitor get the same question at the same moment, and you watch both answer in real time, with a race track, live timers, and a scoreboard graded against the real answer.
+
+```bash
+npm i
+npm run race        # then open http://localhost:4100
+```
+
+- **Racers:** Jev (hosted, TypeSafe API) and [Laya](https://huggingface.co/convaiinnovations/laya) (open source, Apache 2.0, runs on your CPU). The first run downloads Laya's weights, about 1.7GB.
+- **Recording mode:** `http://localhost:4100/?rec=1&n=25` hides the controls, starts on its own, and fits a 1920x1080 frame.
+- **Fairness:** Jev's time includes the network round trip to TypeSafe; Laya's is pure local inference, so its speed depends on your CPU. Laya runs in its own worker thread so its CPU work can't delay the timing of Jev's calls.
+- **Spend:** Jev calls are capped at $0.50 per server session by default (`RACE_JEV_CAP_USD` to change it). A 25-question race costs well under a cent.
+- **Adding a competitor:** one entry in [`core/providers.js`](core/providers.js).
+
 ## Cost
 
 | Experiment | Calls | Cost |
