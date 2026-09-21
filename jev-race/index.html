@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Race - jev-lab</title>
+<meta name="description" content="Jev and its open-source competitors answer the same question at the same moment. Watch which one is faster and which one is right.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f7f4ef'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='700' fill='%230b6e4f' text-anchor='middle'%3EJ%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/core/ui/lab.css">
+<link rel="stylesheet" href="/race.css">
+</head>
+<body>
+<main class="page race-page">
+  <h1 class="kicker">jev-lab / race</h1>
+  <p class="finding">Same question, same moment. Which model answers first, and which one gets it right?</p>
+  <p class="meaning">
+    Every question goes to each selected model at once. Timers run live, answers land as they arrive, and the scoreboard keeps count against the real answer.
+  </p>
+
+  <section class="controls" aria-label="Race controls">
+    <div class="control-row">
+      <span class="control-label" id="racers-label">Racers</span>
+      <div class="racers" id="racers" role="group" aria-labelledby="racers-label"></div>
+    </div>
+
+    <div class="control-row">
+      <span class="control-label">Race</span>
+      <div class="race-buttons">
+        <label class="count">
+          <span class="visually-hidden">Number of questions</span>
+          <select id="count">
+            <option value="10">10 questions</option>
+            <option value="25" selected>25 questions</option>
+            <option value="50">50 questions</option>
+          </select>
+        </label>
+        <button type="button" class="btn primary" id="start">Start race</button>
+        <button type="button" class="btn" id="stop" disabled>Stop</button>
+        <span class="status" id="status" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <details class="custom">
+      <summary>Or ask your own</summary>
+      <div class="custom-form">
+        <label>
+          <span>Passage</span>
+          <textarea id="custom-passage" rows="4" maxlength="6000" placeholder="Paste any paragraph of facts."></textarea>
+        </label>
+        <label>
+          <span>Statement to check</span>
+          <input id="custom-statement" type="text" maxlength="300" placeholder="e.g. the company was founded before 2000">
+        </label>
+        <button type="button" class="btn primary" id="ask">Ask the racers</button>
+      </div>
+    </details>
+  </section>
+
+  <section class="stage" id="stage" aria-live="polite" hidden>
+    <p class="stage-meta" id="stage-meta"></p>
+    <p class="stage-statement" id="stage-statement"></p>
+    <p class="stage-passage" id="stage-passage"></p>
+  </section>
+
+  <section class="track" id="track" aria-hidden="true">
+    <div class="track-rows" id="track-rows"></div>
+    <div class="track-scale" id="track-scale"></div>
+  </section>
+
+  <section class="lanes" id="lanes" aria-label="Live answers"></section>
+
+  <section class="board" aria-label="Scoreboard">
+    <h2 class="section-title">Scoreboard</h2>
+    <table class="method-table score-table">
+      <thead>
+        <tr>
+          <th scope="col">Model</th>
+          <th scope="col">Answered</th>
+          <th scope="col">Accuracy</th>
+          <th scope="col">Median</th>
+          <th scope="col">Answered first</th>
+          <th scope="col">Cost</th>
+        </tr>
+      </thead>
+      <tbody id="score-body"></tbody>
+    </table>
+
+    <h2 class="section-title">Latency per question</h2>
+    <div class="hero-chart" id="latency-chart"></div>
+    <p class="chart-caption" id="latency-caption">Starts filling in once the race begins.</p>
+  </section>
+
+  <p class="fairness">
+    How to read the speed numbers: Jev is a hosted API, so its time includes the network round trip to TypeSafe's servers. Laya runs on this machine's CPU with no network at all. Both are real-world numbers for how you'd actually use each one, but they aren't measured under identical conditions, and your machine's CPU changes Laya's times.
+  </p>
+
+  <p class="fairness-short">Jev's time includes the network trip to TypeSafe. Laya runs locally on <span id="machine">this machine's CPU</span>, no GPU.</p>
+
+  <nav class="series-nav" aria-label="Other pages in this series">
+    <a href="https://github.com/tanayvasishtha/jev-lab">jev-lab on GitHub</a>
+  </nav>
+</main>
+<script type="module" src="/race.js"></script>
+</body>
+</html>

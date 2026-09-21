@@ -1,0 +1,187 @@
+/* jev-race page styles. Tokens come from core/ui/lab.css; see DESIGN.md. */
+:root {
+  /* A second series colour for the second racer. A muted ink blue, solid,
+     no gradient, readable on the paper background (about 6:1). */
+  --series-2: #2f5d8a;
+  --series-3: #8a5a1f;
+}
+
+.race-page { max-width: 64rem; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+.section-title {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin: var(--space-5) 0 var(--space-2);
+}
+
+/* ---------- controls ---------- */
+.controls {
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: var(--space-3) 0;
+  margin: var(--space-4) 0;
+}
+.control-row {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: var(--space-3); padding: var(--space-2) 0;
+}
+.control-label {
+  font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted);
+  width: 4.5rem; flex: 0 0 4.5rem;
+}
+.racers, .race-buttons { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+
+.racer {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  border: 1px solid var(--rule); border-radius: 2px;
+  padding: var(--space-2) var(--space-3); cursor: pointer;
+  font-size: 0.95rem; background: #fffdfa;
+}
+.racer input { accent-color: var(--ink); margin: 0; }
+.racer .swatch { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 10px; }
+.racer .racer-status { font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted); }
+.racer[data-status="unavailable"] { opacity: 0.55; cursor: not-allowed; }
+
+.btn {
+  font: inherit; font-size: 0.95rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--ink); border-radius: 2px;
+  background: transparent; color: var(--ink); cursor: pointer;
+}
+.btn.primary { background: var(--ink); color: var(--bg); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn:focus-visible, .racer:focus-within, select:focus-visible,
+textarea:focus-visible, input:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--measure); outline-offset: 2px;
+}
+select {
+  font: inherit; font-size: 0.95rem; padding: var(--space-2);
+  border: 1px solid var(--rule); border-radius: 2px; background: #fffdfa; color: var(--ink);
+}
+.status { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); }
+.status.warn { color: var(--attention); }
+
+.custom { margin-top: var(--space-2); }
+.custom summary { cursor: pointer; font-size: 0.95rem; color: var(--muted); padding: var(--space-2) 0; }
+.custom-form { display: grid; gap: var(--space-3); padding-top: var(--space-2); max-width: 44rem; }
+.custom-form label { display: grid; gap: var(--space-1); font-size: 0.9rem; color: var(--muted); }
+.custom-form textarea, .custom-form input {
+  font: inherit; font-size: 1rem; color: var(--ink);
+  padding: var(--space-2); border: 1px solid var(--rule); border-radius: 2px; background: #fffdfa;
+}
+.custom-form .btn { justify-self: start; }
+
+/* ---------- stage ---------- */
+.stage { margin: var(--space-4) 0 var(--space-3); }
+.stage-meta { font-family: var(--font-mono); font-size: 0.85rem; color: var(--muted); margin: 0 0 var(--space-2); }
+.stage-statement {
+  font-family: var(--font-display); font-weight: 600;
+  font-size: clamp(1.2rem, 1rem + 0.8vw, 1.6rem); line-height: 1.3; margin: 0 0 var(--space-2);
+}
+.stage-passage {
+  color: var(--muted); font-size: 0.95rem; max-width: var(--measure-max); margin: 0;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+/* ---------- race track ---------- */
+.track { margin: var(--space-3) 0 var(--space-4); }
+.track-rows { display: grid; gap: var(--space-2); }
+.track-row {
+  display: grid; grid-template-columns: 5.5rem 1fr 5.5rem;
+  align-items: center; gap: var(--space-3);
+}
+.track-name { font-weight: 600; }
+.track-bar {
+  height: 18px; background: #1a1a1a0f; border-radius: 2px;
+  position: relative; overflow: hidden;
+}
+.track-fill { height: 100%; width: 0; background: var(--lane-color, var(--ink)); }
+.track-row.done .track-fill { opacity: 1; }
+.track-row.pending .track-fill { opacity: 0.55; }
+.track-time { font-family: var(--font-mono); text-align: right; }
+.track-row.first .track-name::after {
+  content: " first"; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 500;
+  color: var(--lane-color, var(--ink));
+}
+.track-scale {
+  font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted);
+  display: grid; grid-template-columns: 5.5rem 1fr 5.5rem; gap: var(--space-3); margin-top: var(--space-1);
+}
+.track-scale .ticks { display: flex; justify-content: space-between; }
+
+/* ---------- lanes ---------- */
+.lanes {
+  display: grid; gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+.lane {
+  border: 1px solid var(--rule); border-top: 3px solid var(--lane-color, var(--ink));
+  border-radius: 2px; background: #fffdfa; padding: var(--space-3);
+}
+.lane-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); }
+.lane-name { font-weight: 600; font-size: 1.05rem; }
+.lane-kind { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); }
+.lane-timer {
+  font-family: var(--font-mono); font-size: 2.2rem; font-weight: 500;
+  margin: var(--space-2) 0 var(--space-1); color: var(--ink);
+}
+.lane-timer .unit { font-size: 1rem; color: var(--muted); margin-left: 2px; }
+.lane.pending .lane-timer { color: var(--muted); }
+.lane-first {
+  font-family: var(--font-mono); font-size: 0.75rem; color: var(--bg); background: var(--lane-color, var(--ink));
+  padding: 1px var(--space-2); border-radius: 2px; visibility: hidden;
+}
+.lane.first .lane-first { visibility: visible; }
+.lane-answer { font-family: var(--font-mono); font-size: 0.95rem; min-height: 1.5em; }
+.lane-answer .verdict-right { color: var(--measure); }
+.lane-answer .verdict-wrong { color: var(--attention); }
+.prob-track { height: 6px; background: #1a1a1a14; border-radius: 3px; overflow: hidden; margin-top: var(--space-2); }
+.prob-fill { height: 100%; width: 0; background: var(--lane-color, var(--ink)); transition: width 0.25s ease-out; }
+.lane-error { color: var(--attention); font-size: 0.85rem; }
+
+/* ---------- scoreboard ---------- */
+.score-table td:first-child { font-family: var(--font-body); font-weight: 600; }
+.score-table .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: var(--space-2); }
+
+.fairness {
+  font-size: 0.9rem; color: var(--muted); max-width: var(--measure-max);
+  border-left: 2px solid var(--rule); padding-left: var(--space-3); margin: var(--space-5) 0;
+}
+
+/* ---------- recording mode (?rec=1): everything needed on camera, nothing else ---------- */
+body.rec .controls, body.rec .meaning, body.rec .series-nav,
+body.rec .chart-caption, body.rec .board .section-title:last-of-type { display: none; }
+body.rec .race-page { max-width: 100rem; padding-top: var(--space-4); padding-bottom: var(--space-2); }
+body.rec .finding { font-size: 1.6rem; margin-bottom: var(--space-3); }
+body.rec .stage-statement { font-size: 2rem; }
+body.rec .stage-passage { -webkit-line-clamp: 2; }
+body.rec .track-row, body.rec .track-scale { grid-template-columns: 8rem 1fr 8rem; }
+body.rec .track-row { font-size: 1.35rem; }
+body.rec .track-bar { height: 30px; }
+body.rec .fairness { margin: var(--space-3) 0 0; font-size: 0.85rem; }
+body.rec .hero-chart { padding: var(--space-2); margin: var(--space-2) 0; }
+/* The track already shows each model's time; don't repeat it in the cards. */
+body.rec .lane-timer { display: none; }
+body.rec .lane { padding: var(--space-2) var(--space-3); }
+body.rec .lane-answer { font-size: 1.15rem; margin-top: var(--space-2); }
+body.rec .board .section-title { margin-top: var(--space-3); }
+body.rec .score-table { margin-bottom: var(--space-2); }
+.fairness-short { display: none; }
+body.rec .fairness { display: none; }
+body.rec .fairness-short {
+  display: block; font-size: 0.85rem; color: var(--muted); margin: var(--space-2) 0 0;
+}
+
+@media (max-width: 640px) {
+  .control-label { width: 100%; flex-basis: 100%; }
+  .lane-timer { font-size: 1.8rem; }
+}
