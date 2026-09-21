@@ -73,6 +73,7 @@
 
   <section class="board" aria-label="Scoreboard">
     <h2 class="section-title">Scoreboard</h2>
+    <div class="table-scroll" tabindex="0" aria-label="Scoreboard, scrolls sideways on small screens">
     <table class="method-table score-table">
       <thead>
         <tr>
@@ -86,6 +87,7 @@
       </thead>
       <tbody id="score-body"></tbody>
     </table>
+    </div>
 
     <h2 class="section-title">Latency per question</h2>
     <div class="hero-chart" id="latency-chart"></div>
@@ -93,10 +95,10 @@
   </section>
 
   <p class="fairness">
-    How to read the speed numbers: Jev is a hosted API, so its time includes the network round trip to TypeSafe's servers. Laya runs on this machine's CPU with no network at all. Both are real-world numbers for how you'd actually use each one, but they aren't measured under identical conditions, and your machine's CPU changes Laya's times.
+    How to read the speed numbers: Jev is a hosted API, so its time includes the network round trip to TypeSafe's servers. Laya and Von run on this machine's CPU with no network at all, and when both race they share the CPU, half each. These are real-world numbers for how you'd actually use each one, but they aren't measured under identical conditions, and your machine's CPU changes the local models' times.
   </p>
 
-  <p class="fairness-short">Jev's time includes the network trip to TypeSafe. Laya runs locally on <span id="machine">this machine's CPU</span>, no GPU.</p>
+  <p class="fairness-short">Jev's time includes the network trip to TypeSafe. The open-source models run locally on <span id="machine">this machine's CPU</span>, no GPU, sharing it when they race.</p>
 
   <nav class="series-nav" aria-label="Other pages in this series">
     <a href="https://github.com/tanayvasishtha/jev-lab">jev-lab on GitHub</a>

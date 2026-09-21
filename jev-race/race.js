@@ -1,4 +1,5 @@
 import { svgRoot, scaleLinear, axis, label, linePath, dot, mount } from "/core/ui/chart.js";
+import { median, pickWinner, isCorrect, nextScale } from "/shared.js";
 
 const COLORS = { jev: "var(--measure)", laya: "var(--series-2)", von: "var(--series-3)" };
 const FALLBACK_COLORS = ["var(--series-3)", "var(--attention)", "var(--ink)"];
@@ -48,9 +49,23 @@ function setStatus(text, warn = false) {
 }
 
 // ---------- providers ----------
+let serverDown = false;
 async function loadProviders() {
-  const res = await fetch("/api/providers");
-  const data = await res.json();
+  let data;
+  try {
+    const res = await fetch("/api/providers");
+    data = await res.json();
+  } catch {
+    // Server restarting or stopped: say so, keep retrying, recover on its own.
+    if (!serverDown) setStatus("Race server not reachable, retrying…", true);
+    serverDown = true;
+    setTimeout(loadProviders, 2000);
+    return;
+  }
+  if (serverDown) {
+    serverDown = false;
+    setStatus("Reconnected.");
+  }
   const firstLoad = providers.length === 0;
   providers = data.providers;
   if (data.machine) document.getElementById("machine").textContent = data.machine;
@@ -201,8 +216,9 @@ function setTrack(id, ms, state) {
 }
 
 function growScaleFor(ms) {
-  if (ms <= scaleMs * 0.92) return false;
-  scaleMs = Math.ceil((ms * 1.25) / 250) * 250;
+  const next = nextScale(scaleMs, ms);
+  if (next === scaleMs) return false;
+  scaleMs = next;
   renderScale();
   return true;
 }
@@ -327,8 +343,8 @@ async function runQuestion({ passage, statement, truth, meta }) {
   );
 
   const ok = results.filter(([, r]) => !r.error);
-  if (ok.length > 1) {
-    const [winner] = ok.reduce((a, b) => (b[1].latencyMs < a[1].latencyMs ? b : a));
+  const winner = pickWinner(results);
+  if (winner) {
     laneEl(winner)?.classList.add("first");
     document.getElementById(`track-${winner}`)?.classList.add("first");
     stats[winner].first += 1;
@@ -351,7 +367,7 @@ async function runQuestion({ passage, statement, truth, meta }) {
     s.cost += r.costUsd ?? 0;
     if (truth !== null) {
       s.graded += 1;
-      if ((r.answer.noul >= 0.5) === truth) s.correct += 1;
+      if (isCorrect(r.answer.noul, truth)) s.correct += 1;
     }
     row.results[id] = r.latencyMs;
   }
@@ -361,12 +377,6 @@ async function runQuestion({ passage, statement, truth, meta }) {
 }
 
 // ---------- scoreboard + chart ----------
-function median(xs) {
-  if (!xs.length) return null;
-  const s = [...xs].sort((a, b) => a - b);
-  const m = Math.floor(s.length / 2);
-  return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2);
-}
 
 function renderScoreboard() {
   els.scoreBody.innerHTML = providers
@@ -415,6 +425,7 @@ function renderChart() {
   svg.append(label(String(history.length), x(history.length), M.top + plotH + 20, { anchor: "middle", mono: true, size: 12 }));
   svg.append(label("1", x(1), M.top + plotH + 20, { anchor: "middle", mono: true, size: 12 }));
 
+  const endLabels = [];
   for (const id of ids) {
     const pts = history.filter((h) => h.results[id] != null).map((h) => ({ x: x(h.index), y: y(h.results[id]) }));
     const color = colorFor(id);
@@ -422,8 +433,18 @@ function renderChart() {
     for (const p of pts) svg.append(dot(p.x, p.y, { r: 3.5, fill: color }));
     const last = pts[pts.length - 1];
     const name = providers.find((p) => p.id === id).name;
-    svg.append(label(`${name} ${median(stats[id].latencies)} ms`, last.x + 10, last.y + 4, { fill: color, mono: true, size: 13 }));
+    endLabels.push({ text: `${name} ${median(stats[id].latencies)} ms`, x: last.x + 10, y: last.y + 4, color });
   }
+  // Lines often finish close together; nudge the end labels apart so they
+  // never print on top of each other.
+  const GAP = 16;
+  endLabels.sort((a, b) => a.y - b.y);
+  for (let i = 1; i < endLabels.length; i++) {
+    if (endLabels[i].y - endLabels[i - 1].y < GAP) endLabels[i].y = endLabels[i - 1].y + GAP;
+  }
+  const overflow = endLabels.length ? endLabels[endLabels.length - 1].y - (M.top + plotH + 4) : 0;
+  if (overflow > 0) for (const l of endLabels) l.y -= overflow;
+  for (const l of endLabels) svg.append(label(l.text, l.x, l.y, { fill: l.color, mono: true, size: 13 }));
 
   mount(els.chart, svg);
   els.chartCaption.textContent = `One point per question. The label at the end of each line is that model's median latency so far, n=${history.length}.`;
@@ -502,4 +523,4 @@ document.addEventListener("visibilitychange", () => {
   if (document.hidden && running) stopRequested = true;
 });
 
-loadProviders().catch((err) => setStatus(`Could not reach the race server: ${err.message}`, true));
+loadProviders();

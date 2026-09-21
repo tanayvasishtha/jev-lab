@@ -71,7 +71,7 @@ select {
 .status.warn { color: var(--attention); }
 
 .custom { margin-top: var(--space-2); }
-.custom summary { cursor: pointer; font-size: 0.95rem; color: var(--muted); padding: var(--space-2) 0; }
+.custom summary { cursor: pointer; font-size: 0.95rem; color: var(--muted); padding: var(--space-2) 0; list-style-position: inside; }
 .custom-form { display: grid; gap: var(--space-3); padding-top: var(--space-2); max-width: 44rem; }
 .custom-form label { display: grid; gap: var(--space-1); font-size: 0.9rem; color: var(--muted); }
 .custom-form textarea, .custom-form input {
@@ -149,6 +149,11 @@ select {
 .lane-error { color: var(--attention); font-size: 0.85rem; }
 
 /* ---------- scoreboard ---------- */
+/* Six columns of figures can't shrink below ~470px; on phones the table
+   scrolls inside this box instead of widening the whole page. */
+.table-scroll { overflow-x: auto; }
+.table-scroll:focus-visible { outline: 2px solid var(--measure); outline-offset: 2px; }
+.score-table { white-space: nowrap; }
 .score-table td:first-child { font-family: var(--font-body); font-weight: 600; }
 .score-table .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: var(--space-2); }
 
