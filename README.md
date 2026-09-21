@@ -62,6 +62,8 @@ On macOS/Linux use `.venv-von/bin/python` instead of `.venv-von/Scripts/python.e
 - **DirectML (integrated Radeon GPU):** ONNX Runtime loads Laya but crashes on a Reshape node at inference.
 - **int8 quantization:** 4x smaller (1.7GB to 425MB) but only 1.15x faster, and accuracy dropped from 32/40 to 26/40. Zen 2 CPUs lack the VNNI instructions that make int8 fast. The script is kept at [`jev-race/quantize-laya.py`](jev-race/quantize-laya.py) for anyone re-measuring on newer hardware.
 - **Spend:** Jev calls are capped at $0.50 per server session by default (`RACE_JEV_CAP_USD` to change it). A 25-question race costs well under a cent.
+- **Crash-safe:** Laya runs in its own child process. If it crashes (it can under memory pressure; a 16GB machine running Laya, Von, a browser and a screen recorder is tight), only its lane misses a question; the server stays up and restarts it within a few seconds. The page reconnects on its own if the server restarts.
+- **Tests:** `npm test` covers the race logic and the server's guards (file allowlist, input validation, spend cap) without loading any model or spending anything.
 - **Adding a competitor:** one entry in [`core/providers.js`](core/providers.js).
 
 ## Cost
