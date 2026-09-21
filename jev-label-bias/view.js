@@ -74,10 +74,10 @@ async function main() {
     drop > 0.01
       ? `Naming the correct option <span class="figure">"unlikely"</span> drops Jev's routing accuracy from ` +
         `<span class="figure">${fmtPct(neutralAcc)}</span> to <span class="figure">${fmtPct(adversarialAcc)}</span>, across ` +
-        `<span class="figure">${results.completeTickets}</span> tickets.`
+        `<span class="figure">${results.completeTickets.toLocaleString("en-US")}</span> tickets.`
       : `Renaming the options doesn't move Jev's routing accuracy: <span class="figure">${fmtPct(neutralAcc)}</span> neutral vs. ` +
         `<span class="figure">${fmtPct(adversarialAcc)}</span> with the correct option labeled "unlikely", across ` +
-        `<span class="figure">${results.completeTickets}</span> tickets.`;
+        `<span class="figure">${results.completeTickets.toLocaleString("en-US")}</span> tickets.`;
 
   mount(document.getElementById("hero-chart"), slopegraph(results.accuracyByScheme));
   document.getElementById("hero-caption").textContent =

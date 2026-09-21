@@ -144,12 +144,13 @@ async function main() {
   const res = await fetch("./results.json");
   const results = await res.json();
 
+  // ECE is the average gap between stated confidence and actual accuracy,
+  // so 0.031 reads directly as "off by 3.1 points on average".
   document.getElementById("finding").innerHTML =
-    `Jev says <span class="figure">${fmtPct(1 - results.ece)}</span>-ish confidence matches reality: ` +
-    `across <span class="figure">${results.n}</span> labeled questions its expected calibration error was ` +
-    `<span class="figure">${results.ece.toFixed(3)}</span> ` +
-    `(95% CI ${results.eceCI95[0].toFixed(3)}–${results.eceCI95[1].toFixed(3)}), and it was right ` +
-    `<span class="figure">${fmtPct(results.accuracy)}</span> of the time overall.`;
+    `When Jev says how sure it is, it's off by <span class="figure">${(results.ece * 100).toFixed(1)} points</span> on average. ` +
+    `That's across <span class="figure">${results.n.toLocaleString("en-US")}</span> labeled questions ` +
+    `(expected calibration error ${results.ece.toFixed(3)}, 95% CI ${results.eceCI95[0].toFixed(3)}–${results.eceCI95[1].toFixed(3)}), ` +
+    `and it got <span class="figure">${fmtPct(results.accuracy)}</span> of them right.`;
 
   mount(document.getElementById("hero-chart"), reliabilityChart(results));
   const nonEmptyBins = results.reliability.filter((b) => b.count > 0);

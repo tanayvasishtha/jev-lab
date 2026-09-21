@@ -72,8 +72,8 @@ async function main() {
       ? `Asking Jev the same question <span class="figure">${results.saturationSize}</span> different ways and averaging lifts accuracy from ` +
         `<span class="figure">${fmtPct(acc1)}</span> to <span class="figure">${fmtPct(accSat)}</span>, for about <span class="figure">$${costSat.toFixed(4)}</span> across ` +
         `<span class="figure">${results.items}</span> items.`
-      : `Asking Jev the same question more than once barely moves accuracy here: <span class="figure">${fmtPct(acc1)}</span> at size 1 vs. ` +
-        `<span class="figure">${fmtPct(accSat)}</span> at the best size tested, across <span class="figure">${results.items}</span> items.`;
+      : `Asking Jev the same question 100 different ways and averaging barely moves accuracy: <span class="figure">${fmtPct(acc1)}</span> asking once, ` +
+        `<span class="figure">${fmtPct(results.perSize[100].accuracyMean)}</span> averaging all 100, across <span class="figure">${results.items}</span> questions.`;
 
   mount(document.getElementById("hero-chart"), accuracyCurve(results));
   document.getElementById("hero-caption").textContent =

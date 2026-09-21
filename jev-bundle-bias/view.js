@@ -111,8 +111,8 @@ async function main() {
 
   document.getElementById("finding").innerHTML =
     `Bundling a question with 9 unrelated ones flips Jev's answer <span class="figure">${fmtPct(results.flipRate)}</span> of the time ` +
-    `(95% CI ${fmtPct(results.flipRateCI95[0])}–${fmtPct(results.flipRateCI95[1])}), across <span class="figure">${results.pairedComparisons}</span> paired comparisons ` +
-    `over <span class="figure">${results.completeTargets}</span> questions, with a mean probability shift of <span class="figure">${results.meanAbsShift.toFixed(3)}</span>.`;
+    `(95% CI ${fmtPct(results.flipRateCI95[0])}–${fmtPct(results.flipRateCI95[1])}), across <span class="figure">${results.pairedComparisons.toLocaleString("en-US")}</span> paired comparisons ` +
+    `over <span class="figure">${results.completeTargets.toLocaleString("en-US")}</span> questions, with a mean probability shift of <span class="figure">${results.meanAbsShift.toFixed(3)}</span>.`;
 
   mount(document.getElementById("hero-chart"), shiftByPositionChart(points));
   document.getElementById("hero-caption").textContent =
