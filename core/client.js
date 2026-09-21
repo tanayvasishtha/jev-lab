@@ -3,6 +3,15 @@
  * Experiments must call through runner.js.
  */
 import { createHash } from "node:crypto";
+import { Agent, setGlobalDispatcher } from "undici";
+
+// The SDK uses the global fetch. Node's default closes an idle connection
+// after 4 seconds, so any gap longer than that between Jev calls pays for a
+// fresh TLS connection, measured at roughly +800ms per call (about 1200ms vs
+// 400ms). In a three-way race with a slow local model, every question has a
+// gap that long, which made Jev look twice as slow as it is. A real app that
+// calls Jev regularly keeps its connection open, so keep ours open too.
+setGlobalDispatcher(new Agent({ keepAliveTimeout: 60_000, keepAliveMaxTimeout: 600_000 }));
 import {
   TypeSafeClient,
   noul,
