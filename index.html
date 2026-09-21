@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>jev-lab</title>
+<meta name="description" content="Four independent experiments stress-testing TypeSafe's Jev: calibration, bundle bias, label bias, and ensembling.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f7f4ef'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' font-weight='700' fill='%230b6e4f' text-anchor='middle'%3EJ%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600;700&family=Source+Sans+3:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core/ui/lab.css">
+<style>
+  .experiment-list { list-style: none; padding: 0; margin: var(--space-4) 0; }
+  .experiment {
+    display: block; padding: var(--space-4) 0; border-bottom: 1px solid var(--rule);
+    text-decoration: none; color: inherit;
+  }
+  .experiment:first-child { padding-top: 0; }
+  .experiment:last-child { border-bottom: none; }
+  .experiment .num { font-family: var(--font-mono); color: var(--muted); font-size: 0.9rem; }
+  .experiment h2 {
+    font-family: var(--font-display); font-weight: 600; font-size: 1.4rem;
+    margin: var(--space-1) 0 var(--space-2); color: var(--ink);
+  }
+  .experiment p { margin: 0 0 var(--space-2); max-width: var(--measure-max); }
+  .experiment .result { font-family: var(--font-mono); font-size: 0.9rem; color: var(--measure); }
+  .experiment:hover h2 { text-decoration: underline; }
+  .top-links { font-size: 0.95rem; margin: var(--space-2) 0 var(--space-5); }
+  .top-links a { color: var(--measure); margin-right: var(--space-3); }
+  .cost-line { font-family: var(--font-mono); font-size: 0.9rem; color: var(--muted); margin-top: var(--space-2); }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1 class="kicker">jev-lab</h1>
+  <p class="finding" style="font-size: clamp(1.4rem, 1rem + 1.6vw, 2rem);">
+    Four independent experiments stress-testing <a href="https://typesafe.ai" style="color: var(--measure);">TypeSafe's Jev</a>.
+  </p>
+  <p class="meaning">
+    Every number on every page traces back to a committed raw response log. Each experiment was preregistered before its data was collected, and the git history proves it.
+  </p>
+  <p class="top-links">
+    <a href="PLAN.md">Build spec</a>
+    <a href="DESIGN.md">Design rationale</a>
+    <a href="https://github.com/tanayvasishtha/jev-lab">Source</a>
+  </p>
+
+  <ul class="experiment-list">
+    <li>
+      <a class="experiment" href="jev-calibration-audit/">
+        <span class="num">01 / does Jev know what it doesn't know?</span>
+        <h2>Calibration audit</h2>
+        <p>12,697 labeled questions run through Jev's confidence type, checked against ground truth.</p>
+        <span class="result">Finding: calibration holds. ECE 0.031, under the 0.05 threshold preregistered.</span>
+      </a>
+    </li>
+    <li>
+      <a class="experiment" href="jev-bundle-bias/">
+        <span class="num">02 / does asking questions together change the answers?</span>
+        <h2>Bundle bias</h2>
+        <p>2,000 questions asked alone, then bundled with 9 unrelated ones across 6,000 paired comparisons.</p>
+        <span class="result">Finding: a real, small effect. 3.6% flip rate, flat across position and composition.</span>
+      </a>
+    </li>
+    <li>
+      <a class="experiment" href="jev-label-bias/">
+        <span class="num">03 / does the option's name change what gets picked?</span>
+        <h2>Label bias</h2>
+        <p>1,000 routing decisions under four label schemes, identical criteria text, only the key names change.</p>
+        <span class="result">Finding: no measurable effect, even under adversarial labeling.</span>
+      </a>
+    </li>
+    <li>
+      <a class="experiment" href="jev-ensemble-gain/">
+        <span class="num">04 / is asking 100 times worth it?</span>
+        <h2>Ensemble gain</h2>
+        <p>500 questions asked 100 different ways each, comparing accuracy at ensemble sizes 1 through 100.</p>
+        <span class="result">Finding: no, not on this task. Accuracy and calibration both stay flat.</span>
+      </a>
+    </li>
+  </ul>
+
+  <p class="cost-line">74,697 calls across all four experiments. Total cost: $1.63.</p>
+</main>
+</body>
+</html>
