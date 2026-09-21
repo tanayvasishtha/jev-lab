@@ -98,7 +98,23 @@ async function handleQuestions(url, res) {
     question: row.question,
     label: row.label,
   }));
+  // A race is starting. Open Jev's connection now with one tiny call, so
+  // question 1 isn't charged ~800ms of TLS setup that later questions don't
+  // pay. Costs a fraction of a cent and counts toward the session cap.
+  await warmJev();
   send(res, 200, { seed, items });
+}
+
+async function warmJev() {
+  const jev = PROVIDERS.jev;
+  if (!jev || jev.status() !== "ready" || jevSpentUsd >= JEV_CAP_USD) return;
+  try {
+    const r = await jev.ask({ state: "Warm-up.", question: { type: "noul", instructions: "Is this a warm-up?" } });
+    jevSpentUsd += r.costUsd;
+    jevCalls += 1;
+  } catch {
+    /* a failed warm-up just means question 1 may be slower */
+  }
 }
 
 const server = http.createServer(async (req, res) => {
@@ -127,6 +143,19 @@ const server = http.createServer(async (req, res) => {
     send(res, err?.status ?? 500, { error: err?.message ?? String(err) });
   }
 });
+
+// This process times Jev's network calls. When Laya and Von are crunching
+// on every core, a normal-priority process gets starved and notices Jev's
+// responses late, which measured Jev at ~800ms instead of the ~370ms its API
+// actually takes. Running just this (lightweight) process slightly above
+// normal keeps Jev's timing honest; Laya's child process is put back to
+// normal priority in core/providers.js, so the local models still compete
+// with each other on equal terms.
+try {
+  os.setPriority(os.constants.priority.PRIORITY_ABOVE_NORMAL);
+} catch {
+  /* not permitted on this OS/user; timings may read slightly high */
+}
 
 server.listen(PORT, HOST, () => {
   console.log(`jev-race on http://localhost:${PORT}  (Jev spend cap $${JEV_CAP_USD.toFixed(2)} per session)`);

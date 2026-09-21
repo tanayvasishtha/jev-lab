@@ -68,6 +68,14 @@ function startLayaWorker() {
     stdio: ["ignore", "inherit", "inherit", "ipc"],
   });
   layaChild = child;
+  // The race server may run above normal priority to keep Jev's timing
+  // honest (see jev-race/server.js). Children inherit that on Windows, so
+  // put Laya back to normal: it should compete for CPU exactly like Von.
+  try {
+    os.setPriority(child.pid, os.constants.priority.PRIORITY_NORMAL);
+  } catch {
+    /* ignore */
+  }
   child.on("message", (msg) => {
     if (msg.type === "ready") {
       layaStatus = "ready";
